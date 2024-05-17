@@ -1,0 +1,103 @@
+﻿@page "/addcategory"
+
+@using SawyersCodeBlog.Client.Models
+@using SawyersCodeBlog.Client.Services.Interfaces
+@using SawyersCodeBlog.Client.Components
+@using SawyersCodeBlog.Helpers
+@inject ICategoryDTOService CategoryService
+@rendermode InteractiveServer
+
+<div class="container">
+    <EditForm Model="Category" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        <div class="row p-2 g-3">
+            <div class="col-12 col-md-4">
+                <div class="square-img-container">
+                    <img src="@(string.IsNullOrEmpty(Category.ImageUrl) ? ImageHelper.DefaultContactImage : Category.ImageUrl)" class="square-img" />
+                </div>
+                <div>
+                    <InputFile OnChange="OnFileChange" class="form-control mt-2" accept=".png, .jpg, .jpeg, .svg" />
+                    <span class="text-danger">
+                        @imageError
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="row g-2">
+                    <div class="col-12">
+                        <label for="firstName" class="form-label">Category Name</label>
+                        <InputText @bind-Value="Category!.Name" id="CategoryName" aria-label="First Name" class="form-control" placeholder="Category Name" />
+                        <ValidationMessage For="() => Category.Name" />
+                    </div>
+                    <div class="col-12">
+                        <label for="lastName" class="form-label">Description</label>
+                        <InputText @bind-Value="Category.Description" id="description" aria-label="Description" class="form-control" placeholder="Description" />
+                        <ValidationMessage For="() => Category.Description" />
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        Save Category
+                        <i class="bi bi-floppy"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+
+@code {
+
+    private CategoryDTO Category = new CategoryDTO();
+
+    private IEnumerable<CategoryDTO> categories = [];
+    private string? imageError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await CategoryService.GetCategoriesAsync();
+    }
+
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            await CategoryService.CreateCategoryAsync(Category);
+            categories = await CategoryService.GetCategoriesAsync();
+            Category = new CategoryDTO();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+
+
+    private async Task OnFileChange(InputFileChangeEventArgs changeEvent)
+    {
+        imageError = null;
+
+        if (changeEvent.File is null)
+        {
+            Category.ImageUrl = ImageHelper.DefaultContactImage;
+        }
+        else if (changeEvent.File.Size > ImageHelper.MaxFileSize)
+        {
+            imageError = "Images must be less than 5 mb.";
+        }
+        else
+        {
+            try
+            {
+                Category.ImageUrl = await ImageHelper.GetDataUrl(changeEvent.File);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                imageError = "Could not read the selected file. Please select a different image.";
+            }
+        }
+    }
+
+}

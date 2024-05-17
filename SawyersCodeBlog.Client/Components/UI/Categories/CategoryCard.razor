@@ -1,0 +1,36 @@
+﻿@using SawyersCodeBlog.Client.Models
+
+@if (Category is not null)
+{
+    <div class="card overflow-hidden">
+        <div class="row g-0">
+            <div class="col-sm-4 bg-repeat-0 bg-size-cover" style="background-image">
+                <img src="@Category.ImageUrl" class="square-img" />
+            </div>
+            <div class="col-sm-8">
+                <div class="card-body">
+                    <h4 class="card-title">@Category.Name</h4>
+                    <p class="card-text">@Category.Description</p>
+                    <a href="categories" class="btn btn-danger" @onclick="HandleDelete">Delete Category</a>
+                    <a href="categories/edit/@Category.Id" class="btn btn-secondary">Edit Category</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+@code {
+    [Parameter, EditorRequired]
+    public CategoryDTO? Category { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnDelete { get; set; }
+
+    private async Task HandleDelete()
+    {
+        await OnDelete.InvokeAsync(Category!.Id);
+    }
+}

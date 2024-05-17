@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SawyersCodeBlog.Helpers;
+using System.ComponentModel.DataAnnotations;
 
 namespace SawyersCodeBlog.Client.Models
 {
@@ -13,7 +14,7 @@ namespace SawyersCodeBlog.Client.Models
         [Length(1, 200, ErrorMessage = "The {0} must be between {1} and {2} characters")]
         public string? Description { get; set; }
 
-        public string? ImageUrl { get; set; }
+        public string? ImageUrl { get; set; } = ImageHelper.DefaultContactImage;
 
         public ICollection<BlogPostDTO> Posts { get; set; } = new HashSet<BlogPostDTO>();
     }

@@ -26,6 +26,7 @@ namespace SawyersCodeBlog.Client.Helpers
                 FirstName = firstName,
                 LastName = lastName,
                 ProfilePictureUrl = profilePictureUrl,
+                Roles = [.. authState.User.FindAll(ClaimTypes.Role).Select(c => c.Value)]
             };
 
             return userInfo;
