@@ -56,8 +56,28 @@ namespace SawyersCodeBlog.Services
 
             if (shouldUpdate)
             {
+                ImageUpload? oldImage = null;
+
+                if (category.Image is not null)
+                {
+                    // save the new image
+                    context.Images.Add(category.Image);
+
+                    // check for an old image
+                    oldImage = await context.Images.FirstOrDefaultAsync(i => i.Id == category.ImageId);
+
+                    // fix the foreign key
+                    category.ImageId = category.Image.Id;
+                }
+
                 context.Categories.Update(category);
                 await context.SaveChangesAsync();
+
+                if (oldImage is not null)
+                {
+                    context.Images.Remove(oldImage);
+                    await context.SaveChangesAsync();
+                }
             }
         }
     }
