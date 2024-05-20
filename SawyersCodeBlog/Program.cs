@@ -47,6 +47,9 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryDTOService, CategoryDTOService>();
 
+builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+builder.Services.AddScoped<IBlogPostDTOService, BlogPostDTOService>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

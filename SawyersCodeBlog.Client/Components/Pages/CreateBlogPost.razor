@@ -1,0 +1,42 @@
+﻿@page "/author/create"
+@using Microsoft.AspNetCore.Authorization
+@using SawyersCodeBlog.Client.Components.UI
+@using SawyersCodeBlog.Client.Models
+@using SawyersCodeBlog.Client.Services.Interfaces
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Author")]
+@inject IBlogPostDTOService BlogPostService
+
+<div class="container">
+    <h3>
+        New Blog Post
+    </h3>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <BlogPostForm Post="new BlogPostDTO()" OnSubmit="HandleSubmit" />
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private BlogPostDTO BlogPost = new BlogPostDTO();
+
+    private IEnumerable<BlogPostDTO> posts = [];
+
+
+    private async Task HandleSubmit (BlogPostDTO post)
+    {
+        try
+        {
+            await BlogPostService.CreateBlogPostAsync(post);
+            post = new BlogPostDTO();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+}

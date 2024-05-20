@@ -8,6 +8,8 @@ namespace SawyersCodeBlog.Helpers
     {
         public static readonly string DefaultProfilePicture = "/images/DefaultProfilePicture.png.png";
         public static readonly string DefaultContactImage = "/images/DefaultProfilePicture.png.png";
+        public static readonly string DefaultCategoryImage = "/images/DefaultProfilePicture.png.png";
+        public static readonly string DefaultBlogPostImage = "/images/DefaultProfilePicture.png.png";
         public static readonly int MaxFileSize = 5 * 1024 * 1024;
 
         public static async Task<string> GetDataUrl(IBrowserFile file)

@@ -1,0 +1,154 @@
+﻿@using SawyersCodeBlog.Client.Models
+@using SawyersCodeBlog.Client.Services.Interfaces
+@using SawyersCodeBlog.Helpers
+@inject ICategoryDTOService CategoryService
+
+@if (Post is not null)
+{
+    <EditForm Model="Post" OnValidSubmit="HandleSubmit" class="row">
+        <DataAnnotationsValidator />
+
+        <div class="col-lg-4">
+            @* title *@
+            <div class="mb-2">
+                <label class="form-label">Title</label>
+                <InputText class="form-control" @bind-Value="Post.Title" />
+                <ValidationMessage For="() => Post.Title" />
+            </div>
+            @* abstract *@
+            <div class="mb-2">
+                <label class="form-label">Abstract</label>
+                <InputText class="form-control" @bind-Value="Post.Abstract" rows="3" />
+                <ValidationMessage For="() => Post.Abstract" />
+            </div>
+            @* category *@
+            <div class="mb-2">
+                <label class="form-label">Category</label>
+                <InputSelect class="form-select" @bind-Value="Post.CategoryId">
+                    <option value="">
+                        Select a category
+                    </option>
+                    @foreach (CategoryDTO category in categories)
+                    {
+                        <option value="@category.Id">
+                            @category.Name
+                        </option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Post.CategoryId" />
+            </div>
+            @* image *@
+            <div class="mb-2">
+                <img class="img-fluid" style="max-height: 350px" src="@(string.IsNullOrEmpty(Post.ImageUrl) ? ImageHelper.DefaultBlogPostImage : Post.ImageUrl )" />
+                <InputFile OnChange="OnFileChange" class="form-control mt-3" accept=".png, .jpg, .jpeg, .svg" />
+            </div>
+        </div>
+        <div class="col-lg-8 vstack gap-2">
+            <!-- post content and tags -->
+            <div class="flex-fill vstack">
+                <label class="form-label">Content</label>
+                <TinyMCE.Blazor.Editor ScriptSrc="/tinymce/tinymce.min.js" @bind-Value="Post.Content"
+                                       Field="() => Post.Content" ClassName="rich-text-editor" Conf="editorConfig" />
+
+                <ValidationMessage For="() => Post.Content" />
+            </div>
+            @* tags *@
+            <div class="mb-2">
+                <label class="form-label">
+                    Tags
+                </label>
+                <input class="form-control" />
+            </div>
+        </div>
+        <div class="col-12 text-end">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <InputCheckbox class="form-check-input" @bind-Value="Post.IsPublished" />
+                    Publish?
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+
+        <ValidationSummary />
+    </EditForm>
+
+    @* slug *@
+}
+
+
+
+@code {
+    [Parameter, EditorRequired]
+    public BlogPostDTO? Post { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<BlogPostDTO> OnSubmit { get; set; }
+
+    private IEnumerable<CategoryDTO> categories = [];
+    private string? imageError;
+
+    // tinyMCE config
+    private static readonly Dictionary<string, object> editorConfig = new()
+    {
+        { "toolbar", "undo redo | bold italic underline | link codesample " },
+        { "plugins", "anchor autolink link charmap preview table codesample" },
+        { "default_link_target", "_blank" },
+        { "link_assume_external_targets", true },
+        { "link_context_toolbar", true },
+        { "codesample_languages", new object[] {
+                new { text = "HTML/XML", value = "markup" },
+                new { text = "JavaScript", value = "javascript" },
+                new { text = "CSS", value = "css" },
+                new { text = "C#", value = "csharp" },
+                new { text = "Razor", value = "razor" },
+                new { text = "JSON", value = "json" },
+        }
+        },
+        { "codesample_global_prismjs", true },
+        { "promotion", false },
+        { "height", "100%" },
+    };
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await CategoryService.GetCategoriesAsync();
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            await OnSubmit.InvokeAsync(Post);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+
+    private async Task OnFileChange(InputFileChangeEventArgs changeEvent)
+    {
+        imageError = null;
+
+        if (changeEvent.File is null)
+        {
+            Post!.ImageUrl = ImageHelper.DefaultContactImage;
+        }
+        else
+        {
+            try
+            {
+                Post!.ImageUrl = await ImageHelper.GetDataUrl(changeEvent.File);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                imageError = "Could not read the selected file. Please select a different image.";
+            }
+        }
+    }
+}

@@ -296,7 +296,7 @@ namespace SawyersCodeBlog.Migrations
 
                     b.HasIndex("ImageId");
 
-                    b.ToTable("BlogPost");
+                    b.ToTable("BlogPosts");
                 });
 
             modelBuilder.Entity("SawyersCodeBlog.Model.Category", b =>

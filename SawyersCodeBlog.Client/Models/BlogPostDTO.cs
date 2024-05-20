@@ -17,7 +17,6 @@ namespace SawyersCodeBlog.Client.Models
         [Length(2, 200, ErrorMessage = "The {0} must be between {1} and {2} characters")]
         public string? Title { get; set; }
 
-        [Required]
         public string? Slug { get; set; }
 
         [Required]
