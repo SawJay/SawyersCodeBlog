@@ -44,5 +44,50 @@ namespace SawyersCodeBlog.Services
             return newPost.ToDTO();
             
         }
+
+        public async Task DeleteBlogPostAsync(int blogPostId)
+        {
+            await _repository.DeleteBlogPostAsync(blogPostId);
+        }
+
+        public async Task<BlogPostDTO?> GetBlogPostByIdAsync(int id)
+        {
+            BlogPost? blogPost = await _repository.GetBlogPostByIdAsync(id);
+            return blogPost?.ToDTO();
+        }
+
+        public async Task<IEnumerable<BlogPostDTO>> GetBlogPostsAsync()
+        {
+            IEnumerable<BlogPost> blogPosts = await _repository.GetBlogPostsAsync();
+
+            IEnumerable<BlogPostDTO> blogPostDTOs = blogPosts.Select(c => c.ToDTO());
+
+            return blogPostDTOs;
+        }
+
+        public async Task UpdateBlogPostAsync(BlogPostDTO blogPostDTO)
+        {
+            BlogPost? blogPostToUpdate = await _repository.GetBlogPostByIdAsync(blogPostDTO.Id);
+
+            if (blogPostToUpdate is not null)
+            {
+                blogPostToUpdate.Title = blogPostDTO.Title;
+                blogPostToUpdate.Abstract = blogPostDTO.Abstract;
+                blogPostToUpdate.IsPublished = blogPostDTO.IsPublished;
+                blogPostToUpdate.Content = blogPostDTO.Content;
+                blogPostToUpdate.CategoryId = blogPostDTO.CategoryId;
+
+                if (blogPostDTO.ImageUrl!.StartsWith("data:"))
+                {
+                    blogPostToUpdate.Image = UploadHelper.GetImageUpload(blogPostDTO.ImageUrl);
+                }
+                else
+                {
+                    blogPostToUpdate.Image = null;
+                }
+
+                await _repository.UpdateBlogPostAsync(blogPostToUpdate);
+            }
+        }
     }
 }

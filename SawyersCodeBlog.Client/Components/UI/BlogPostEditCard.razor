@@ -1,0 +1,37 @@
+﻿@using SawyersCodeBlog.Client.Models
+
+@if (Post is not null)
+{
+    <div class="card overflow-hidden mt-3">
+        <div class="row g-0">
+            <div class="col-sm-4 bg-repeat-0 bg-size-cover" style="background-image">
+                <img src="@Post.ImageUrl" class="square-img" />
+            </div>
+            <div class="col-sm-8">
+                <div class="card-body">
+                    <h4 class="card-title">@Post.Title</h4>
+                    <p class="card-text">@Post.Abstract</p>
+                    <p class="card-text">@Post.Category!.Name</p>
+                    <a href="author/blogposts" class="btn btn-danger" @onclick="HandleDelete">Delete Post</a>
+                    <a href="author/blogposts/edit/@Post.Id" class="btn btn-secondary">Edit Post</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+@code {
+    [Parameter, EditorRequired]
+    public BlogPostDTO? Post { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnDelete { get; set; }
+
+    private async Task HandleDelete()
+    {
+        await OnDelete.InvokeAsync(Post!.Id);
+    }
+}

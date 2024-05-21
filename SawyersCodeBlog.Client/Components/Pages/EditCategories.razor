@@ -4,6 +4,7 @@
 @using SawyersCodeBlog.Client.Services.Interfaces
 @using SawyersCodeBlog.Client.Components.UI
 @using SawyersCodeBlog.Helpers
+@attribute [Authorize]
 @inject ICategoryDTOService CategoryService
 @rendermode InteractiveServer
 @inject NavigationManager Nav
@@ -67,7 +68,7 @@
     private async Task HandleSubmit()
     {
         await CategoryService.UpdateCategoryAsync(CategoryToEdit);
-        Nav.NavigateTo("categories");
+        Nav.NavigateTo("author/categories");
 
     }
 

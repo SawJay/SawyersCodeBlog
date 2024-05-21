@@ -1,0 +1,48 @@
+﻿@page "/author/blogposts/edit/{id:int}"
+@using Microsoft.AspNetCore.Authorization
+@using SawyersCodeBlog.Client.Models
+@using SawyersCodeBlog.Client.Services.Interfaces
+@using SawyersCodeBlog.Client.Components.UI
+@using SawyersCodeBlog.Helpers
+@attribute [Authorize]
+@inject IBlogPostDTOService BlogPostService
+@rendermode InteractiveServer
+@inject NavigationManager Nav
+
+
+<PageTitle>Edit Blog Post</PageTitle>
+
+<div class="container">
+    <h3>
+        Edit Blog Post
+    </h3>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <BlogPostForm Post="BlogPostToEdit" OnSubmit="HandleSubmit" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private BlogPostDTO BlogPostToEdit = new BlogPostDTO();
+
+    private IEnumerable<BlogPostDTO> posts = [];
+    private string? imageError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        BlogPostToEdit = (await BlogPostService.GetBlogPostByIdAsync(Id))!;
+    }
+
+    private async Task HandleSubmit()
+    {
+        await BlogPostService.UpdateBlogPostAsync(BlogPostToEdit);
+        Nav.NavigateTo("author/blogposts");
+
+    }
+
+}

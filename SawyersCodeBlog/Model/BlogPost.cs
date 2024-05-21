@@ -75,6 +75,14 @@ namespace SawyersCodeBlog.Model
                 CategoryId = post.CategoryId,
             };
 
+            if(post.Category is not null)
+            {
+                post.Category.Posts.Clear();
+
+                CategoryDTO categoryDTO = post.Category.ToDTO();
+                dTO.Category = categoryDTO;
+            }
+
             foreach (Comment comment in post.Comments)
             {
                 post.Comments.Clear();

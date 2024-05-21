@@ -34,7 +34,7 @@ namespace SawyersCodeBlog.Services
         {
             using ApplicationDbContext context = contextFactory.CreateDbContext();
 
-            IEnumerable<Category> categories = await context.Categories.ToListAsync();
+            IEnumerable<Category> categories = await context.Categories.Include(c => c.Posts).ToListAsync();
 
             return categories;
         }
