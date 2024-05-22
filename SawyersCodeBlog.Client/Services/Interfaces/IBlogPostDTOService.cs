@@ -1,4 +1,5 @@
-﻿using SawyersCodeBlog.Client.Models;
+﻿using SawyersCodeBlog.Client.Components.Pages.Posts;
+using SawyersCodeBlog.Client.Models;
 
 namespace SawyersCodeBlog.Client.Services.Interfaces
 {
@@ -9,5 +10,7 @@ namespace SawyersCodeBlog.Client.Services.Interfaces
         Task<BlogPostDTO?> GetBlogPostByIdAsync(int id);
         Task UpdateBlogPostAsync(BlogPostDTO blogPostDTO);
         Task DeleteBlogPostAsync(int blogPostId);
+        Task IsDeleteBlogPostAsync(int blogPostId);
+        Task<BlogPostDTO?> GetBlogPostBySlugAsync(string slug);
     }
 }

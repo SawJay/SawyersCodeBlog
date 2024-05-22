@@ -41,8 +41,12 @@ namespace SawyersCodeBlog.Services
             }
 
             newPost = await _repository.CreateBlogPostAsync(newPost);
+
+            IEnumerable<string> tagNames = blogPostDto.Tags.Select(t => t.Name!);
+            await _repository.AddTagsToBlogPostAsync(newPost.Id, tagNames);
+
             return newPost.ToDTO();
-            
+
         }
 
         public async Task DeleteBlogPostAsync(int blogPostId)
@@ -56,6 +60,12 @@ namespace SawyersCodeBlog.Services
             return blogPost?.ToDTO();
         }
 
+        public async Task<BlogPostDTO?> GetBlogPostBySlugAsync(string slug)
+        {
+            BlogPost? blogPost = await _repository.GetBlogPostBySlugAsync(slug);
+            return blogPost?.ToDTO();
+        }
+
         public async Task<IEnumerable<BlogPostDTO>> GetBlogPostsAsync()
         {
             IEnumerable<BlogPost> blogPosts = await _repository.GetBlogPostsAsync();
@@ -63,6 +73,11 @@ namespace SawyersCodeBlog.Services
             IEnumerable<BlogPostDTO> blogPostDTOs = blogPosts.Select(c => c.ToDTO());
 
             return blogPostDTOs;
+        }
+
+        public async Task IsDeleteBlogPostAsync(int blogPostId)
+        {
+            await _repository.IsDeleteBlogPostAsync(blogPostId);
         }
 
         public async Task UpdateBlogPostAsync(BlogPostDTO blogPostDTO)

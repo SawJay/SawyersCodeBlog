@@ -38,8 +38,6 @@ namespace SawyersCodeBlog.Model
 
             foreach (BlogPost post in category.Posts)
             {
-                category.Posts.Clear();
-
                 BlogPostDTO postDTO = post.ToDTO();
                 dto.Posts.Add(postDTO);
             }

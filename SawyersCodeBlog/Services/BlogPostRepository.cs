@@ -98,7 +98,7 @@ namespace SawyersCodeBlog.Services
         {
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
 
-            IEnumerable<BlogPost> blogPosts = await context.BlogPosts.Include(bp => bp.Category).Include(bp => bp.Comments).ToListAsync();
+            IEnumerable<BlogPost> blogPosts = await context.BlogPosts.Include(bp => bp.Category).Include(bp => bp.Comments).Include(bp => bp.Tags).ToListAsync();
 
             return blogPosts;
         }
@@ -160,5 +160,76 @@ namespace SawyersCodeBlog.Services
             }
         }
 
+        public async Task AddTagsToBlogPostAsync(int blogPostId, IEnumerable<string> tagNames)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+            TextInfo textInfo = new CultureInfo("en-US").TextInfo;
+
+            BlogPost? blogPost = await context.BlogPosts.Include(b => b.Tags).FirstOrDefaultAsync(b => b.Id == blogPostId);
+
+            if (blogPost is not null)
+            {
+                foreach(string tagName in  tagNames)
+                {
+                    Tag? existingTag = await context.Tags.FirstOrDefaultAsync(t => t.Name!.ToLower().Trim() == tagName.ToLower().Trim());
+
+                    if (existingTag is not null)
+                    {
+                        blogPost.Tags.Add(existingTag);
+                    }
+                    else
+                    {
+                        string titleCaseTagName = textInfo.ToTitleCase(tagName.Trim());
+                        Tag newTag = new Tag() { Name = titleCaseTagName };
+
+                        context.Tags.Add(newTag);
+                        blogPost.Tags.Add(newTag);
+                    }
+                }
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task RemoveTagsFromBlogPostAsync(int blogPostId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            BlogPost? blogPost = await context.BlogPosts.Include(b  => b.Tags).FirstOrDefaultAsync(b => b.Id == blogPostId);
+
+            if (blogPost is not null)
+            {
+                blogPost.Tags.Clear();
+                await context.SaveChangesAsync();
+
+                // to do, delete tags that have no posts
+            }
+        }
+
+        public async Task IsDeleteBlogPostAsync(int blogPostId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            BlogPost? blogPost = await context.BlogPosts.FirstOrDefaultAsync(b => b.Id == blogPostId);
+
+            if (blogPost is not null)
+            {
+                blogPost.IsPublished = false;
+                blogPost.IsDeleted = true;
+
+                context.BlogPosts.Update(blogPost);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<BlogPost?> GetBlogPostBySlugAsync(string slug)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            BlogPost? blogPost = await context.BlogPosts.Where(b => b.IsPublished == true && b.IsDeleted == false)
+                                                        .Include(bp => bp.Category).Include(bp => bp.Comments).ThenInclude(c => c.Author).Include(bp => bp.Tags).FirstOrDefaultAsync(b => b.Slug == slug);
+
+            return blogPost;
+        }
     }
 }

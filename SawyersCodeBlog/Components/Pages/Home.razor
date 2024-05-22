@@ -1,7 +1,9 @@
 ﻿@page "/"
+@layout SidebarLayout
 @using SawyersCodeBlog.Client.Components.UI
 @using SawyersCodeBlog.Client.Models
 @using SawyersCodeBlog.Client.Services.Interfaces
+@using SawyersCodeBlog.Components.Layout
 @rendermode InteractiveServer
 
 @inject IBlogPostDTOService BlogPostService
@@ -9,100 +11,12 @@
 
 <PageTitle>Home</PageTitle>
 
-<div class="container pt-1 pb-lg-5 pb-md-4 pb-2 my-5">
-    <div class="row mb-md-2 mb-xl-4">
+<h1 class="pb-3 pb-lg-4">My Blogs:</h1>
+@foreach (BlogPostDTO blogPost in posts.Where(bp => bp.IsPublished == true))
+{
+    <BlogPostCard blogPost="blogPost" />
+}
 
-        <!-- Blog posts -->
-        <div class="col-lg-9 pe-lg-4 pe-xl-5">
-            <h1 class="pb-3 pb-lg-4">My Blogs:</h1>
-
-            @foreach (BlogPostDTO blogPost in posts)
-            {
-                <BlogPostCard blogPost="blogPost" />
-            }
-        </div>
-
-
-        <!-- Sidebar (offcanvas on sreens < 992px) -->
-        <aside class="col-lg-3">
-            <div class="offcanvas-lg offcanvas-end" id="sidebarBlog">
-                <div class="offcanvas-header">
-                    <h4 class="offcanvas-title">Sidebar</h4>
-                    <button class="btn-close ms-auto" type="button" data-bs-dismiss="offcanvas" data-bs-target="#sidebarBlog" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body">
-
-                    <!-- Search box -->
-                    <div class="position-relative mb-4 mb-lg-5">
-                        <i class="ai-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-                        <input class="form-control ps-5" type="search" placeholder="Enter keyword">
-                    </div>
-
-                    <!-- Category links -->
-                    <h4 class="pt-1 pt-lg-0 mt-lg-n2">Categories:</h4>
-                    <ul class="nav flex-column mb-lg-5 mb-4">
-
-                        @foreach (CategoryDTO category in categories)
-                        {
-                            <li class="mb-2">
-                                <a class="nav-link d-flex p-0" href="#">
-                                    @category.Name
-                                    <span class="fs-sm text-body-secondary ms-2">(@category.Posts.Count)</span>
-                                </a>
-                            </li>
-                        }
-                    </ul>
-
-                    <!-- Featured posts widget -->
-                    <h4 class="pt-3 pt-lg-0 pb-1">Trending posts:</h4>
-                    <div class="mb-lg-5 mb-4">
-                        <article class="position-relative d-flex align-items-center mb-4">
-                            <img class="rounded" src="assets/img/blog/sidebar/01.jpg" width="92" alt="Post image">
-                            <div class="ps-3">
-                                <h4 class="h6 mb-2">
-                                    <a class="stretched-link" href="blog-single-v1.html">Instagram trends that will definitely work</a>
-                                </h4>
-                                <span class="fs-sm text-body-secondary">13 hours ago</span>
-                            </div>
-                        </article>
-                        <article class="position-relative d-flex align-items-center mb-4">
-                            <img class="rounded" src="assets/img/blog/sidebar/02.jpg" width="92" alt="Post image">
-                            <div class="ps-3">
-                                <h4 class="h6 mb-2">
-                                    <a class="stretched-link" href="blog-single-v2.html">A session with a psychologist</a>
-                                </h4>
-                                <span class="fs-sm text-body-secondary">May 12, 2022</span>
-                            </div>
-                        </article>
-                        <article class="position-relative d-flex align-items-center">
-                            <img class="rounded" src="assets/img/blog/sidebar/03.jpg" width="92" alt="Post image">
-                            <div class="ps-3">
-                                <h4 class="h6 mb-2">
-                                    <a class="stretched-link" href="blog-single-v3.html">How to look for inspiration for new goals</a>
-                                </h4>
-                                <span class="fs-sm text-body-secondary">June 10, 2022</span>
-                            </div>
-                        </article>
-                    </div>
-
-                    <!-- Social buttons -->
-                    <h4 class="pt-3 pt-lg-0 pb-1">Follow me:</h4>
-                    <div class="d-flex mt-n3 ms-n3 mb-lg-5 mb-4 pb-3 pb-lg-0">
-                        <a class="btn btn-secondary btn-icon btn-sm btn-facebook rounded-circle mt-3 ms-3" href="https://www.linkedin.com/in/sawyer-dillon-51b5a8305/" aria-label="Facebook">
-                            <i class="ai-linkedin"></i>
-                        </a>
-                        <a class="btn btn-secondary btn-icon btn-sm btn-telegram rounded-circle mt-3 ms-3" href="https://github.com/SawJay" aria-label="Telegram">
-                            <i class="ai-github"></i>
-                        </a>
-                        <a class="btn btn-secondary btn-icon btn-sm btn-x rounded-circle mt-3 ms-3" href="mailto:sawyerjd1@gmail.com" aria-label="X">
-                            <i class="ai-message"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </aside>
-    </div>
-</div>
 
 @code {
     [Parameter, EditorRequired]

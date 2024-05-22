@@ -73,11 +73,12 @@ namespace SawyersCodeBlog.Model
                 IsDeleted = post.IsDeleted,
                 ImageUrl = post.ImageId.HasValue ? $"api/uploads/{post.ImageId}" : UploadHelper.DefaultContactImage,
                 CategoryId = post.CategoryId,
+                Slug = post.Slug,
             };
 
             if(post.Category is not null)
             {
-                post.Category.Posts.Clear();
+                post.Category.Posts = [];
 
                 CategoryDTO categoryDTO = post.Category.ToDTO();
                 dTO.Category = categoryDTO;
@@ -85,15 +86,13 @@ namespace SawyersCodeBlog.Model
 
             foreach (Comment comment in post.Comments)
             {
-                post.Comments.Clear();
-
                 CommentDTO commentDTO = comment.ToDTO();
                 dTO.Comments.Add(commentDTO);
             }
 
             foreach (Tag tag in post.Tags)
             {
-                post.Tags.Clear();
+                tag.Posts = [];
 
                 TagDTO tagDTO = tag.ToDTO();
                 dTO.Tags.Add(tagDTO);

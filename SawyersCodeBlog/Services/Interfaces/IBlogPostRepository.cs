@@ -9,5 +9,9 @@ namespace SawyersCodeBlog.Services.Interfaces
         Task<BlogPost?> GetBlogPostByIdAsync(int id);
         Task UpdateBlogPostAsync(BlogPost blogPost);
         Task DeleteBlogPostAsync(int blogPostId);
+        Task IsDeleteBlogPostAsync(int blogPostId);
+        Task AddTagsToBlogPostAsync (int blogPostId, IEnumerable<string> tagNames);
+        Task RemoveTagsFromBlogPostAsync(int blogPostId);
+        Task<BlogPost?> GetBlogPostBySlugAsync(string slug);
     }
 }

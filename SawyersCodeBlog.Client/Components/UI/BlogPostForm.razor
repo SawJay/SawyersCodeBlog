@@ -52,12 +52,11 @@
 
                 <ValidationMessage For="() => Post.Content" />
             </div>
-            @* tags *@
             <div class="mb-2">
                 <label class="form-label">
                     Tags
                 </label>
-                <input class="form-control" />
+                <InputText @bind-Value="tagNames" class="form-control" />
             </div>
         </div>
         <div class="col-12 text-end">
@@ -86,6 +85,7 @@
     public EventCallback<BlogPostDTO> OnSubmit { get; set; }
 
     private IEnumerable<CategoryDTO> categories = [];
+    private string tagNames = string.Empty;
     private string? imageError;
 
     // tinyMCE config
@@ -103,7 +103,7 @@
                 new { text = "C#", value = "csharp" },
                 new { text = "Razor", value = "razor" },
                 new { text = "JSON", value = "json" },
-        }
+    }
         },
         { "codesample_global_prismjs", true },
         { "promotion", false },
@@ -121,6 +121,19 @@
     {
         try
         {
+            IEnumerable<string> listOfNames = tagNames.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+            List<TagDTO> tags = new List<TagDTO>();
+            foreach(string name in listOfNames)
+            {
+                TagDTO tag = new TagDTO() { Name = name };
+                tags.Add(tag);
+            }
+
+            Post!.Tags = tags;
+
+            // Post!.Tags = [.. listOfNames.Select(name => new TagDTO() { Name = name })];
+
             await OnSubmit.InvokeAsync(Post);
         }
         catch (Exception ex)

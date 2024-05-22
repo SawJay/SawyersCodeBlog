@@ -1,19 +1,26 @@
-﻿@page "/addcategory"
-
+﻿@page "/categories/edit/{id:int}"
+@using Microsoft.AspNetCore.Authorization
 @using SawyersCodeBlog.Client.Models
 @using SawyersCodeBlog.Client.Services.Interfaces
-@using SawyersCodeBlog.Client.Components
+@using SawyersCodeBlog.Client.Components.UI
 @using SawyersCodeBlog.Helpers
+@attribute [Authorize(Roles = "Author")]
 @inject ICategoryDTOService CategoryService
 @rendermode InteractiveServer
+@inject NavigationManager Nav
+
+
+<PageTitle>Edit Category</PageTitle>
+
+<h3>Edit Categories</h3>
 
 <div class="container">
-    <EditForm Model="Category" OnValidSubmit="HandleSubmit">
+    <EditForm Model="CategoryToEdit" OnSubmit="HandleSubmit">
         <DataAnnotationsValidator />
         <div class="row p-2 g-3">
             <div class="col-12 col-md-4">
                 <div class="square-img-container">
-                    <img src="@(string.IsNullOrEmpty(Category.ImageUrl) ? ImageHelper.DefaultContactImage : Category.ImageUrl)" class="square-img" />
+                    <img src="@(string.IsNullOrEmpty(CategoryToEdit.ImageUrl) ? ImageHelper.DefaultContactImage : CategoryToEdit.ImageUrl)" class="square-img" />
                 </div>
                 <div>
                     <InputFile OnChange="OnFileChange" class="form-control mt-2" accept=".png, .jpg, .jpeg, .svg" />
@@ -26,13 +33,13 @@
                 <div class="row g-2">
                     <div class="col-12">
                         <label for="firstName" class="form-label">Category Name</label>
-                        <InputText @bind-Value="Category!.Name" id="CategoryName" aria-label="First Name" class="form-control" placeholder="Category Name" />
-                        <ValidationMessage For="() => Category.Name" />
+                        <InputText @bind-Value="CategoryToEdit!.Name" id="CategoryName" aria-label="First Name" class="form-control" placeholder="@CategoryToEdit.Name" />
+                        <ValidationMessage For="() => CategoryToEdit.Name" />
                     </div>
                     <div class="col-12">
                         <label for="lastName" class="form-label">Description</label>
-                        <InputText @bind-Value="Category.Description" id="description" aria-label="Description" class="form-control" placeholder="Description" />
-                        <ValidationMessage For="() => Category.Description" />
+                        <InputText @bind-Value="CategoryToEdit.Description" id="description" aria-label="Description" class="form-control" placeholder="@CategoryToEdit.Description" />
+                        <ValidationMessage For="() => CategoryToEdit.Description" />
                     </div>
                     <button type="submit" class="btn btn-primary btn-sm">
                         Save Category
@@ -44,33 +51,25 @@
     </EditForm>
 </div>
 
-
 @code {
+    [Parameter]
+    public int Id { get; set; }
 
-    private CategoryDTO Category = new CategoryDTO();
+    private CategoryDTO CategoryToEdit = new CategoryDTO();
 
     private IEnumerable<CategoryDTO> categories = [];
     private string? imageError;
 
     protected override async Task OnInitializedAsync()
     {
-        categories = await CategoryService.GetCategoriesAsync();
+        CategoryToEdit = (await CategoryService.GetCategoryByIdAsync(Id))!;
     }
-
 
     private async Task HandleSubmit()
     {
-        try
-        {
-            await CategoryService.CreateCategoryAsync(Category);
-            categories = await CategoryService.GetCategoriesAsync();
-            Category = new CategoryDTO();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-            throw;
-        }
+        await CategoryService.UpdateCategoryAsync(CategoryToEdit);
+        Nav.NavigateTo("author/categories");
+
     }
 
 
@@ -80,7 +79,7 @@
 
         if (changeEvent.File is null)
         {
-            Category.ImageUrl = ImageHelper.DefaultContactImage;
+            CategoryToEdit.ImageUrl = ImageHelper.DefaultContactImage;
         }
         else if (changeEvent.File.Size > ImageHelper.MaxFileSize)
         {
@@ -90,7 +89,7 @@
         {
             try
             {
-                Category.ImageUrl = await ImageHelper.GetDataUrl(changeEvent.File);
+                CategoryToEdit.ImageUrl = await ImageHelper.GetDataUrl(changeEvent.File);
             }
             catch (Exception ex)
             {
@@ -99,5 +98,4 @@
             }
         }
     }
-
 }

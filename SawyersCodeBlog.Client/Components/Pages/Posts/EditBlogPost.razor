@@ -4,11 +4,10 @@
 @using SawyersCodeBlog.Client.Services.Interfaces
 @using SawyersCodeBlog.Client.Components.UI
 @using SawyersCodeBlog.Helpers
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Author")]
 @inject IBlogPostDTOService BlogPostService
 @rendermode InteractiveServer
 @inject NavigationManager Nav
-
 
 <PageTitle>Edit Blog Post</PageTitle>
 
