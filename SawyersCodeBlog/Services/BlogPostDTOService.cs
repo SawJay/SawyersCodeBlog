@@ -91,6 +91,8 @@ namespace SawyersCodeBlog.Services
 
         public async Task UpdateBlogPostAsync(BlogPostDTO blogPostDTO)
         {
+            await _repository.RemoveTagsFromBlogPostAsync(blogPostDTO.Id);
+
             BlogPost? blogPostToUpdate = await _repository.GetBlogPostByIdAsync(blogPostDTO.Id);
 
             if (blogPostToUpdate is not null)
@@ -111,6 +113,9 @@ namespace SawyersCodeBlog.Services
                 }
 
                 await _repository.UpdateBlogPostAsync(blogPostToUpdate);
+
+                IEnumerable<string> selectedTags = blogPostDTO.Tags.Select(t => t.Name!);
+                await _repository.AddTagsToBlogPostAsync(blogPostToUpdate.Id, selectedTags);
             }
         }
     }

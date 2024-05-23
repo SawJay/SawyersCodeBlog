@@ -117,6 +117,18 @@
         categories = await CategoryService.GetCategoriesAsync();
     }
 
+    protected override void OnParametersSet()
+    {
+        List<string> names = new List<string>();
+
+        foreach (TagDTO tag in Post!.Tags)
+        {
+            names.Add(tag.Name!);
+        }
+
+        tagNames = string.Join(", ", names);
+    }
+
     private async Task HandleSubmit()
     {
         try
