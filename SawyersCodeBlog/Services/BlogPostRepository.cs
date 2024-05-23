@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using SawyersCodeBlog.Client.Models;
 using SawyersCodeBlog.Data;
+using SawyersCodeBlog.Helpers.Extensions;
 using SawyersCodeBlog.Model;
 using SawyersCodeBlog.Services.Interfaces;
 using System.Globalization;
@@ -241,6 +243,15 @@ namespace SawyersCodeBlog.Services
                                                                  .Include(c => c.Comments).OrderByDescending(c => c.Comments.Count()).Take(4).ToListAsync();
 
             return posts;
+        }
+
+        public async Task<PagedList<BlogPost>> GetPublishedBlogPostsAsync(int page, int pageSize)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            PagedList<BlogPost> blogPosts = await context.BlogPosts.Where(c => c.IsPublished == true).Include(bp => bp.Category).Include(bp => bp.Comments).Include(bp => bp.Tags).OrderByDescending(b => b.Created).ToPagedListAsync(page, pageSize);
+
+            return blogPosts;
         }
     }
 }

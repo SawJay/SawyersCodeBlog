@@ -31,6 +31,12 @@
     <script src="assets/js/theme.min.js"></script>
     <script src="_content/TinyMCE.Blazor/tinymce-blazor.js"></script>
     <script src="_framework/blazor.web.js"></script>
+
+    <script>
+        Blazor.addEventListener("enhancedload", () => {
+            window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+        });
+    </script>
 </body>
 
 </html>

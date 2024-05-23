@@ -4,7 +4,6 @@
 @using SawyersCodeBlog.Client.Models
 @using SawyersCodeBlog.Client.Services.Interfaces
 @using SawyersCodeBlog.Components.Layout
-@rendermode InteractiveServer
 
 @inject IBlogPostDTOService BlogPostService
 @inject ICategoryDTOService CategoryService
@@ -12,23 +11,51 @@
 <PageTitle>Home</PageTitle>
 
 <h1 class="pb-3 pb-lg-4">My Blogs:</h1>
-@foreach (BlogPostDTO blogPost in posts.Where(bp => bp.IsPublished == true))
+@foreach (BlogPostDTO blogPost in posts.Data)
 {
     <BlogPostCard blogPost="blogPost" />
 }
 
+<div class="row gy-3 align-items-center mt-lg-5 pt-2 pt-md-4 pt-lg-0">
+    
+    @if (Page > 1)
+    {
+        <div class="col col-md-4 col-12 justify-content-end">
+            <a class="btn btn-primary btn-sm w-md-auto w-100" href="?page=@(Page - 1)"><ai class="ai ai-arrow-left"></ai>Previous Page</a>
+        </div>
+    }
+    
+    <div class="col col-md-4 col-6">
+        <span class="fw-bold">
+            Page @posts.Page of @posts.TotalPages
+        </span>
+    </div>
+    @if (Page < posts.TotalPages)
+    {
+    <div class="col col-md-4 col-12 justify-content-end">
+            <a class="btn btn-primary btn-sm w-md-auto w-100" href="?page=@(Page + 1)"><ai class="ai ai-arrow-right"></ai>  Next Page</a>
+    </div>
+    }
+</div>
 
 @code {
+    [SupplyParameterFromQuery]
+    public int Page { get; set; }
+
+
     [Parameter, EditorRequired]
     public CategoryDTO? Category { get; set; }
 
+    private int pageSize = 4;
     private BlogPostDTO blogPost = new BlogPostDTO();
-    private IEnumerable<BlogPostDTO> posts = [];
+    private PagedList<BlogPostDTO> posts = new PagedList<BlogPostDTO>();
     private IEnumerable<CategoryDTO> categories = [];
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        posts = await BlogPostService.GetBlogPostsAsync();
+        if (Page < 1) Page = 1;
+
+        posts = await BlogPostService.GetPublishedBlogPostsAsync(Page, pageSize);
 
         categories = await CategoryService.GetCategoriesAsync();
     }

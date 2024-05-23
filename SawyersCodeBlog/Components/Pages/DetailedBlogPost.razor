@@ -1,5 +1,6 @@
 ﻿@page "/posts/{slug}"
 @layout SidebarLayout
+@using SawyersCodeBlog.Client.Components.UI
 @using SawyersCodeBlog.Client.Models
 @using SawyersCodeBlog.Client.Services.Interfaces
 @using SawyersCodeBlog.Components.Layout
@@ -20,146 +21,146 @@
 else
 {
     <PageTitle>My Blog | @blogPost.Title</PageTitle>
-    
 
-                <!-- Post title + post meta -->
-                <h1 class="pb-2 pb-lg-3">@blogPost.Title</h1>
-                <div class="d-flex flex-wrap align-items-center justify-content-between border-bottom mb-4">
-                    <div class="d-flex align-items-center mb-4 me-4">
-                        <span class="fs-sm me-2">By:</span>
-                        <a class="nav-link position-relative fw-semibold p-0" href="#" data-scroll data-scroll-offset="80">
-                            Sawyer Dillon
-                            <span class="d-block position-absolute start-0 bottom-0 w-100" style="background-color: currentColor; height: 1px;"></span>
+
+    <!-- Post title + post meta -->
+    <h1 class="pb-2 pb-lg-3">@blogPost.Title</h1>
+    <div class="d-flex flex-wrap align-items-center justify-content-between border-bottom mb-4">
+        <div class="d-flex align-items-center mb-4 me-4">
+            <span class="fs-sm me-2">By:</span>
+            <a class="nav-link position-relative fw-semibold p-0" href="#" data-scroll data-scroll-offset="80">
+                Sawyer Dillon
+                <span class="d-block position-absolute start-0 bottom-0 w-100" style="background-color: currentColor; height: 1px;"></span>
+            </a>
+        </div>
+        <div class="d-flex align-items-center mb-4">
+            <span class="fs-sm me-2">Share post:</span>
+            <div class="d-flex">
+                <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Instagram" aria-label="Instagram">
+                    <i class="ai-instagram"></i>
+                </a>
+                <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook">
+                    <i class="ai-facebook"></i>
+                </a>
+                <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram">
+                    <i class="ai-telegram fs-sm"></i>
+                </a>
+                <a class="nav-link p-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="X" aria-label="X">
+                    <i class="ai-x"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Post content -->
+    <p class="fs-lg pt-2 pt-sm-3">@blogPost.Abstract</p>
+    <figure class="figure">
+        <img class="figure-img rounded-5 mb-3" src="@blogPost.ImageUrl" alt="Image">
+    </figure>
+    <p class="fs-lg pb-2 pb-lg-0 mb-4 mb-lg-5">@((MarkupString)blogPost.Content!)</p>
+
+    <!-- Tags -->
+    <div class="d-flex flex-wrap pb-5 pt-3 pt-md-4 pt-xl-5 mt-xl-n2">
+        <h3 class="h6 py-1 mb-0 me-4">Relevant tags:</h3>
+        @foreach (TagDTO tag in blogPost.Tags)
+        {
+            <a class="nav-link fs-sm py-1 px-0 me-3" href="#">
+                <span class="text-primary">#</span>@tag.Name
+            </a>
+        }
+        <a class="nav-link fs-sm py-1 px-0 me-3" href="#">
+            <span class="text-primary">#</span>Books
+        </a>
+    </div>
+
+    <!-- Author widget -->
+    <div class="border-top border-bottom py-4" id="author">
+        <div class="d-flex align-items-start py-2">
+            <img class="d-block rounded-circle mb-3" src="api/uploads/author" width="56" alt="Author image">
+            <div class="d-md-flex w-100 ps-4">
+                <div style="max-width: 26rem;">
+                    <h3 class="h5 mb-2">Sawyer Dillon</h3>
+                    <p class="fs-sm mb-0">Porta nisl a ultrices ut libero id. Gravida mi neque, tristique justo, et pharetra laoreet nulla est nulla cras ac arcu sed mattis tristique convallis suspen enim blandit massa cursus augue dui mattis morbi velit semper nunc at etiam lacinia.</p>
+                </div>
+                <div class="pt-4 pt-md-0 ps-md-4 ms-md-auto">
+                    <h3 class="h5">Share post:</h3>
+                    <div class="d-flex">
+                        <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Instagram" aria-label="Instagram">
+                            <i class="ai-instagram"></i>
+                        </a>
+                        <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Facebook" aria-label="Facebook">
+                            <i class="ai-facebook"></i>
+                        </a>
+                        <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Telegram" aria-label="Telegram">
+                            <i class="ai-telegram fs-sm"></i>
+                        </a>
+                        <a class="nav-link p-2" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="X" aria-label="X">
+                            <i class="ai-x"></i>
                         </a>
                     </div>
-                    <div class="d-flex align-items-center mb-4">
-                        <span class="fs-sm me-2">Share post:</span>
-                        <div class="d-flex">
-                            <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Instagram" aria-label="Instagram">
-                                <i class="ai-instagram"></i>
-                            </a>
-                            <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook" aria-label="Facebook">
-                                <i class="ai-facebook"></i>
-                            </a>
-                            <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Telegram" aria-label="Telegram">
-                                <i class="ai-telegram fs-sm"></i>
-                            </a>
-                            <a class="nav-link p-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="X" aria-label="X">
-                                <i class="ai-x"></i>
-                            </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <CommentArea @rendermode="InteractiveServer"/>
+
+    <!-- Comments -->
+    <div class="pt-4 pt-xl-5 mt-4" id="comments">
+        <h2 class="h1 py-lg-1 py-xl-3">14 comments</h2>
+
+        <!-- Comment -->
+        <div class="border-bottom py-4 mt-2 mb-4">
+            <div class="d-flex align-items-center pb-1 mb-3">
+                <img class="rounded-circle" src="assets/img/avatar/08.jpg" width="48" alt="Comment author">
+                <div class="ps-3">
+                    <h6 class="mb-0">Albert Flores</h6>
+                    <span class="fs-sm text-body-secondary">5 hours ago</span>
+                </div>
+            </div>
+            <p class="pb-2 mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tellus lectus, tempus eu urna eu, imperdiet dignissim augue. Aliquam fermentum est a ligula bibendum, ac gravida ipsum dictum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur suscipit quam ut velit condimentum, nec mollis risus semper. Curabitur quis mauris eget ligula tincidunt venenatis. Sed congue pulvinar hendrerit.</p>
+            <button class="nav-link fs-sm fw-semibold px-0 py-2" type="button">
+                Reply
+                <i class="ai-redo fs-xl ms-2"></i>
+            </button>
+        </div>
+
+        <!-- Comment form -->
+        <div class="card border-0 bg-secondary pt-2 p-md-2 p-xl-3 p-xxl-4 mt-n3 mt-md-0">
+            <div class="card-body">
+                <h2 class="pb-2 pb-lg-3 pb-xl-4">Leave a comment</h2>
+                <form class="row needs-validation g-4" novalidate>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="c-name">Name</label>
+                        <input class="form-control" type="text" placeholder="Your name" required id="c-name">
+                        <div class="invalid-feedback">Please enter your name!</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="c-email">Email</label>
+                        <input class="form-control" type="email" placeholder="Your email" required id="c-email">
+                        <div class="invalid-feedback">Please provide a valid email address!</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="c-comment">Comment</label>
+                        <textarea class="form-control" rows="4" placeholder="Type your comment here..." required id="c-comment"></textarea>
+                        <div class="invalid-feedback">Please enter a comment message!</div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="c-save">
+                            <label class="form-check-label" for="c-save">Save my name and email</label>
                         </div>
                     </div>
-                </div>
-
-
-                <!-- Post content -->
-                <p class="fs-lg pt-2 pt-sm-3">@blogPost.Abstract</p>
-                <figure class="figure">
-                    <img class="figure-img rounded-5 mb-3" src="@blogPost.ImageUrl" alt="Image">
-                </figure>
-                <p class="fs-lg pb-2 pb-lg-0 mb-4 mb-lg-5">@((MarkupString)blogPost.Content!)</p>
-
-                <!-- Tags -->
-                <div class="d-flex flex-wrap pb-5 pt-3 pt-md-4 pt-xl-5 mt-xl-n2">
-                    <h3 class="h6 py-1 mb-0 me-4">Relevant tags:</h3>
-                    @foreach (TagDTO tag in blogPost.Tags)
-                    {
-                        <a class="nav-link fs-sm py-1 px-0 me-3" href="#">
-                            <span class="text-primary">#</span>@tag.Name
-                        </a>
-                    }
-                    <a class="nav-link fs-sm py-1 px-0 me-3" href="#">
-                        <span class="text-primary">#</span>Books
-                    </a>
-                </div>
-
-                <!-- Author widget -->
-                <div class="border-top border-bottom py-4" id="author">
-                    <div class="d-flex align-items-start py-2">
-                        <img class="d-block rounded-circle mb-3" src="api/uploads/author" width="56" alt="Author image">
-                        <div class="d-md-flex w-100 ps-4">
-                            <div style="max-width: 26rem;">
-                                <h3 class="h5 mb-2">Sawyer Dillon</h3>
-                                <p class="fs-sm mb-0">Porta nisl a ultrices ut libero id. Gravida mi neque, tristique justo, et pharetra laoreet nulla est nulla cras ac arcu sed mattis tristique convallis suspen enim blandit massa cursus augue dui mattis morbi velit semper nunc at etiam lacinia.</p>
-                            </div>
-                            <div class="pt-4 pt-md-0 ps-md-4 ms-md-auto">
-                                <h3 class="h5">Share post:</h3>
-                                <div class="d-flex">
-                                    <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Instagram" aria-label="Instagram">
-                                        <i class="ai-instagram"></i>
-                                    </a>
-                                    <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Facebook" aria-label="Facebook">
-                                        <i class="ai-facebook"></i>
-                                    </a>
-                                    <a class="nav-link p-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Telegram" aria-label="Telegram">
-                                        <i class="ai-telegram fs-sm"></i>
-                                    </a>
-                                    <a class="nav-link p-2" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="X" aria-label="X">
-                                        <i class="ai-x"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary" type="submit">Post a comment</button>
                     </div>
-                </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-
-
-
-                <!-- Comments -->
-                <div class="pt-4 pt-xl-5 mt-4" id="comments">
-                    <h2 class="h1 py-lg-1 py-xl-3">14 comments</h2>
-
-                    <!-- Comment -->
-                    <div class="border-bottom py-4 mt-2 mb-4">
-                        <div class="d-flex align-items-center pb-1 mb-3">
-                            <img class="rounded-circle" src="assets/img/avatar/08.jpg" width="48" alt="Comment author">
-                            <div class="ps-3">
-                                <h6 class="mb-0">Albert Flores</h6>
-                                <span class="fs-sm text-body-secondary">5 hours ago</span>
-                            </div>
-                        </div>
-                        <p class="pb-2 mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tellus lectus, tempus eu urna eu, imperdiet dignissim augue. Aliquam fermentum est a ligula bibendum, ac gravida ipsum dictum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur suscipit quam ut velit condimentum, nec mollis risus semper. Curabitur quis mauris eget ligula tincidunt venenatis. Sed congue pulvinar hendrerit.</p>
-                        <button class="nav-link fs-sm fw-semibold px-0 py-2" type="button">
-                            Reply
-                            <i class="ai-redo fs-xl ms-2"></i>
-                        </button>
-                    </div>
-
-                    <!-- Comment form -->
-                    <div class="card border-0 bg-secondary pt-2 p-md-2 p-xl-3 p-xxl-4 mt-n3 mt-md-0">
-                        <div class="card-body">
-                            <h2 class="pb-2 pb-lg-3 pb-xl-4">Leave a comment</h2>
-                            <form class="row needs-validation g-4" novalidate>
-                                <div class="col-sm-6">
-                                    <label class="form-label" for="c-name">Name</label>
-                                    <input class="form-control" type="text" placeholder="Your name" required id="c-name">
-                                    <div class="invalid-feedback">Please enter your name!</div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <label class="form-label" for="c-email">Email</label>
-                                    <input class="form-control" type="email" placeholder="Your email" required id="c-email">
-                                    <div class="invalid-feedback">Please provide a valid email address!</div>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label" for="c-comment">Comment</label>
-                                    <textarea class="form-control" rows="4" placeholder="Type your comment here..." required id="c-comment"></textarea>
-                                    <div class="invalid-feedback">Please enter a comment message!</div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="checkbox" id="c-save">
-                                        <label class="form-check-label" for="c-save">Save my name and email</label>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <button class="btn btn-primary" type="submit">Post a comment</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-     
 }
 
 @code {

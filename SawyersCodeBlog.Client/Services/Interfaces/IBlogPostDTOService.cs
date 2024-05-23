@@ -7,6 +7,7 @@ namespace SawyersCodeBlog.Client.Services.Interfaces
     {
         Task<BlogPostDTO> CreateBlogPostAsync(BlogPostDTO blogPost);
         Task<IEnumerable<BlogPostDTO>> GetBlogPostsAsync();
+        Task<PagedList<BlogPostDTO>> GetPublishedBlogPostsAsync(int page, int pageSize);
         Task<BlogPostDTO?> GetBlogPostByIdAsync(int id);
         Task UpdateBlogPostAsync(BlogPostDTO blogPostDTO);
         Task DeleteBlogPostAsync(int blogPostId);

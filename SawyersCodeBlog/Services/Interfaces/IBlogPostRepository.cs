@@ -1,4 +1,5 @@
-﻿using SawyersCodeBlog.Model;
+﻿using SawyersCodeBlog.Client.Models;
+using SawyersCodeBlog.Model;
 
 namespace SawyersCodeBlog.Services.Interfaces
 {
@@ -6,6 +7,7 @@ namespace SawyersCodeBlog.Services.Interfaces
     {
         Task<BlogPost> CreateBlogPostAsync (BlogPost blogPost);
         Task<IEnumerable<BlogPost>> GetBlogPostsAsync();
+        Task<PagedList<BlogPost>> GetPublishedBlogPostsAsync(int page, int pageSize);
         Task<BlogPost?> GetBlogPostByIdAsync(int id);
         Task UpdateBlogPostAsync(BlogPost blogPost);
         Task DeleteBlogPostAsync(int blogPostId);
