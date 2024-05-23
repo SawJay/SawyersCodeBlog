@@ -13,5 +13,7 @@ namespace SawyersCodeBlog.Services.Interfaces
         Task AddTagsToBlogPostAsync (int blogPostId, IEnumerable<string> tagNames);
         Task RemoveTagsFromBlogPostAsync(int blogPostId);
         Task<BlogPost?> GetBlogPostBySlugAsync(string slug);
+        Task<IEnumerable<BlogPost>> GetPopularBlogPostsAsync();
+
     }
 }

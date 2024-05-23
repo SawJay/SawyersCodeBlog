@@ -231,5 +231,16 @@ namespace SawyersCodeBlog.Services
 
             return blogPost;
         }
+
+        public async Task<IEnumerable<BlogPost>> GetPopularBlogPostsAsync()
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            IEnumerable<BlogPost> posts = await context.BlogPosts.Where(c => c.IsPublished == true && c.IsDeleted == false)
+                                                                 .Include(c => c.Category).Include(c => c.Tags)
+                                                                 .Include(c => c.Comments).OrderByDescending(c => c.Comments.Count()).Take(4).ToListAsync();
+
+            return posts;
+        }
     }
 }

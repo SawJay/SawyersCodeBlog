@@ -54,6 +54,15 @@ namespace SawyersCodeBlog.Services
             return category?.ToDTO();
         }
 
+        public async Task<IEnumerable<CategoryDTO>> GetPopularCategoriesAsync()
+        {
+            IEnumerable<Category> categories = await repository.GetPopularCategoriesAsync();
+
+            IEnumerable<CategoryDTO> categoryDTOs = categories.Select(c => c.ToDTO());
+
+            return categoryDTOs;
+        }
+
         public async Task UpdateCategoryAsync(CategoryDTO category)
         {
             Category? categoryToUpdate = await repository.GetCategoryByIdAsync(category.Id);

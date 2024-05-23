@@ -1,4 +1,7 @@
-﻿
+﻿@using SawyersCodeBlog.Client.Models
+@using SawyersCodeBlog.Client.Services.Interfaces
+@inject ICategoryDTOService CategoryService
+@inject IBlogPostDTOService BlogPostService
 
 <div class="offcanvas-lg offcanvas-end" id="sidebar">
     <div class="offcanvas-header">
@@ -14,45 +17,36 @@
         </div>
 
         <!-- Popular posts -->
-        <h4 class="pt-1 pt-lg-0 mt-lg-n2">Most popular:</h4>
-        <div class="mb-lg-5 mb-4">
-            <article class="position-relative pb-2 mb-3 mb-lg-4">
-                <img class="rounded-5" src="assets/img/blog/list/01.jpg" alt="Post image">
-                <h5 class="h6 mt-3 mb-0">
-                    <a class="stretched-link" href="blog-single-v1.html">The fashion for eco bags with vintage prints will still be relevant for more than one year</a>
-                </h5>
-            </article>
-            <article class="position-relative">
-                <img class="rounded-5" src="assets/img/blog/list/06.jpg" alt="Post image">
-                <h5 class="h6 mt-3 mb-0">
-                    <a class="stretched-link" href="blog-single-v2.html">A session with a psychologist as a personal choice or a fashion trend</a>
-                </h5>
-            </article>
-        </div>
+        <h4 class="pt-1 pt-lg-0 mt-lg-n2">Categories:</h4>
+        <ul class="nav flex-column mb-lg-5 mb-4">
+            <li class="mb-2">
+                <a class="nav-link d-flex p-0 active" href="#">
+                    All categories
+                    <span class="fs-sm text-body-secondary ms-2">(@blogPosts.Count())</span>
+                </a>
+            </li>
+            @foreach (CategoryDTO category in topCategories)
+            {
+                <li class="mb-2">
+                    <a class="nav-link d-flex p-0" href="#">
+                        @category.Name
+                        <span class="fs-sm text-body-secondary ms-2">(@category.Posts.Count())</span>
+                    </a>
+                </li>
+            }
+        </ul>
 
         <!-- Recent posts -->
-        <h4 class="pt-3 pt-lg-1 mb-4">Recent posts:</h4>
+        <h4 class="pt-3 pt-lg-1 mb-4">Trending posts:</h4>
         <ul class="list-unstyled mb-lg-5 mb-4">
-            <li class="border-bottom pb-3 mb-3">
-                <span class="h6 mb-0">
-                    <a href="blog-single-v1.html">Instagram trends that will definitely work and bring results in the new 2022</a>
-                </span>
-            </li>
-            <li class="border-bottom pb-3 mb-3">
-                <span class="h6 mb-0">
-                    <a href="blog-single-v2.html">A session with a psychologist as a personal choice</a>
-                </span>
-            </li>
-            <li class="border-bottom pb-3 mb-3">
-                <span class="h6 mb-0">
-                    <a href="blog-single-v1.html">Travel destinations to inspire and restore resources</a>
-                </span>
-            </li>
-            <li class="border-bottom pb-3">
-                <span class="h6 mb-0">
-                    <a href="blog-single-v2.html">How to look for inspiration for new goals in life?</a>
-                </span>
-            </li>
+            @foreach (BlogPostDTO blogPost in topBlogPosts)
+            {
+                <li class="border-bottom pb-3 mb-3">
+                    <span class="h6 mb-0">
+                        <a href="#">@blogPost.Title</a>
+                    </span>
+                </li>
+            }
         </ul>
 
         <!-- Relevant topics -->
@@ -71,10 +65,19 @@
     // SSR
 
 
+    public IEnumerable<BlogPostDTO> topBlogPosts = [];
+    public IEnumerable<CategoryDTO> topCategories = [];
+    public IEnumerable<BlogPostDTO> blogPosts = [];
+    public IEnumerable<CategoryDTO> categories = [];
+
     protected override async Task OnInitializedAsync () 
     {
         // get top categories
         // get popular posts
+        topBlogPosts = await BlogPostService.GetPopularBlogPostsAsync();
+        topCategories = await CategoryService.GetPopularCategoriesAsync();
+
+        blogPosts = await BlogPostService.GetBlogPostsAsync();
 
         // display them
     }

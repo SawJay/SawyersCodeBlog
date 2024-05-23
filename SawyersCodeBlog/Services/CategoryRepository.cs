@@ -48,6 +48,17 @@ namespace SawyersCodeBlog.Services
             return category;
         }
 
+        public async Task<IEnumerable<Category>> GetPopularCategoriesAsync()
+        {
+            using ApplicationDbContext context = contextFactory.CreateDbContext();
+
+            IEnumerable<Category> categories = await context.Categories.Include(c => c.Posts.Where(p => p.IsPublished == true && p.IsDeleted == false))
+                                                                        .OrderByDescending(c => c.Posts.Where(p => p.IsPublished == true && p.IsDeleted == false)
+                                                                        .Count()).Take(3).ToListAsync();
+
+            return categories;
+        }
+
         public async Task UpdateCategoryAsync(Category category)
         {
             using ApplicationDbContext context = contextFactory.CreateDbContext();

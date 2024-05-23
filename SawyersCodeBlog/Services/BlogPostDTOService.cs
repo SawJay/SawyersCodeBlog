@@ -75,6 +75,15 @@ namespace SawyersCodeBlog.Services
             return blogPostDTOs;
         }
 
+        public async Task<IEnumerable<BlogPostDTO>> GetPopularBlogPostsAsync()
+        {
+            IEnumerable<BlogPost> blogPosts = await _repository.GetPopularBlogPostsAsync();
+
+            IEnumerable<BlogPostDTO> blogPostDTOs = blogPosts.Select(c => c.ToDTO());
+
+            return blogPostDTOs;
+        }
+
         public async Task IsDeleteBlogPostAsync(int blogPostId)
         {
             await _repository.IsDeleteBlogPostAsync(blogPostId);
