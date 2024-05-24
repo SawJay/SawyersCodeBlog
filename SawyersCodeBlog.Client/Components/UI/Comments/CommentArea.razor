@@ -1,0 +1,52 @@
+﻿@using SawyersCodeBlog.Client.Models
+@using SawyersCodeBlog.Client.Services.Interfaces
+@inject ICommentDTOService CommentService
+
+<div class="pt-4 pt-xl-5 mt-4" id="comments">
+    <h2 class="h1 py-lg-1 py-xl-3">14 comments</h2>
+    @foreach(CommentDTO comment in comments.Where(c => c.BlogPostId == BlogPostId)) {
+        
+        <!-- Comment -->
+        <div class="border-bottom py-4 mt-2 mb-4">
+            <div class="d-flex align-items-center pb-1 mb-3">
+                <img class="rounded-circle" src="@comment.AuthorImageURL" width="48" alt="Comment author">
+                <div class="ps-3">
+                    <h6 class="mb-0">@comment.AuthorName</h6>
+                    <span class="fs-sm text-body-secondary">@comment.Created</span>
+                </div>
+            </div>
+            <p class="pb-2 mb-0">@comment.Content</p>
+        </div>
+    }
+   
+    <div class="card border-0 bg-secondary pt-2 p-md-2 p-xl-3 p-xxl-4 mt-n3 mt-md-0">
+        <CommentForm BlogPostId="BlogPostId" OnSubmit="HandleSubmit"/>
+    </div>
+</div>
+
+
+    @code {
+    [Parameter, EditorRequired]
+    public int BlogPostId { get; set; }
+
+    private IEnumerable<CommentDTO> comments = [];
+    private CommentDTO? comment;
+
+    protected override async Task OnInitializedAsync()
+    {
+        comments = await CommentService.GetCommentsAsync();
+    }
+
+    private async Task HandleSubmit(CommentDTO comment)
+    {
+        try
+        {
+            await CommentService.CreateCommentAsync(comment);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+}

@@ -50,6 +50,9 @@ builder.Services.AddScoped<ICategoryDTOService, CategoryDTOService>();
 builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
 builder.Services.AddScoped<IBlogPostDTOService, BlogPostDTOService>();
 
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<ICommentDTOService, CommentDTOService>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

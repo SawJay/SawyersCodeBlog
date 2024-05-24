@@ -1,0 +1,67 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using SawyersCodeBlog.Client.Helpers
+@using SawyersCodeBlog.Client.Models
+@using SawyersCodeBlog.Client.Services.Interfaces
+@attribute [Authorize]
+
+@if (Comment is not null)
+{
+    <EditForm Model="Comment" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+
+        <!-- Comment form -->
+        <div class="card-body">
+            <h2 class="pb-2 pb-lg-3 pb-xl-2">Leave a comment</h2>
+            <div class="col-12">
+                <label class="form-label">Comment</label>
+                <InputText class="form-control" rows="4" placeholder="Type your comment here..." required id="c-comment" @bind-Value="Comment.Content"></InputText>
+                <ValidationMessage For="() => Comment.Content" />
+                <div class="invalid-feedback">Please enter a comment message!</div>
+            </div>
+            <div class="col-12 pt-4">
+                <button class="btn btn-primary" type="submit">Post a comment</button>
+            </div>
+        </div>
+    </EditForm>
+}
+
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<CommentDTO> OnSubmit { get; set; }
+
+    [Parameter, EditorRequired]
+    public int BlogPostId { get; set; }
+
+    private CommentDTO? Comment = new CommentDTO();
+    private UserInfo? userInfo;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            Comment!.BlogPostId = BlogPostId;
+
+            Comment!.AuthorId = userInfo!.UserId;
+
+            await OnSubmit.InvokeAsync(Comment);
+
+            Comment.Content = "";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+}
