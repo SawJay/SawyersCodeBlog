@@ -60,9 +60,10 @@ namespace SawyersCodeBlog.Services
             if (commentToUpdate is not null)
             {
                 commentToUpdate.Content = commentDTO.Content;
-                commentToUpdate.AuthorId = commentDTO.AuthorId;
                 commentToUpdate.Updated = DateTimeOffset.Now;
                 commentToUpdate.BlogPostId = commentDTO.BlogPostId;
+
+                await _repository.UpdateCommentAsync(commentToUpdate);
             }
         }
     }

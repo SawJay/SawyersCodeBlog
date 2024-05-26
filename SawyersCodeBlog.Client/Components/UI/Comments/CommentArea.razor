@@ -3,7 +3,7 @@
 @inject ICommentDTOService CommentService
 
 <div class="pt-4 pt-xl-5 mt-4" id="comments">
-    <h2 class="h1 py-lg-1 py-xl-3">14 comments</h2>
+    <h2 class="h1 py-lg-1 py-xl-3">@comments.Count() Comments</h2>
     @foreach(CommentDTO comment in comments.Where(c => c.BlogPostId == BlogPostId)) {
         
         <!-- Comment -->
@@ -25,7 +25,7 @@
 </div>
 
 
-    @code {
+@code {
     [Parameter, EditorRequired]
     public int BlogPostId { get; set; }
 
@@ -42,6 +42,8 @@
         try
         {
             await CommentService.CreateCommentAsync(comment);
+
+            comments = await CommentService.GetCommentsAsync();
         }
         catch (Exception ex)
         {
