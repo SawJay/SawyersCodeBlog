@@ -1,4 +1,5 @@
-﻿@using SawyersCodeBlog.Client.Models
+﻿@using SawyersCodeBlog.Client.Helpers
+@using SawyersCodeBlog.Client.Models
 @using SawyersCodeBlog.Client.Services.Interfaces
 @inject ICommentDTOService CommentService
 
@@ -16,17 +17,16 @@
                 </div>
             </div>
             <p class="pb-2 mb-0">@comment.Content</p>
-        </div>
-        <div class="mb-2">
-            <AuthorizeView Roles="Author, Moderator">
-                <Authorized> 
-                 <button class="btn btn-primary btn-sm" @onclick="HandleDelete">
-                     <i class="ai ai-trash"></i>
-                 </button>
-
-                </Authorized>
-                <NotAuthorized></NotAuthorized>
-            </AuthorizeView>
+            <div class="mb-2">
+                <AuthorizeView>
+                        @if (comment.AuthorId == userInfo!.UserId || context.User.IsInRole("Author") || context.User.IsInRole("Moderator"))
+                        {
+                            <button class="btn btn-primary btn-sm" @onclick="async () => await DeleteComment(comment.Id)">
+                                <i class="ai ai-trash"></i>
+                            </button>
+                        }
+                </AuthorizeView>
+            </div>
         </div>
     }
    
@@ -43,9 +43,6 @@
     [CascadingParameter]
     private Task<AuthenticationState>? AuthStateTask { get; set; }
 
-    [Parameter, EditorRequired]
-    public EventCallback<int> OnDelete { get; set; }
-
     private IEnumerable<CommentDTO> comments = [];
     private CommentDTO? comment;
     private UserInfo? userInfo;
@@ -53,6 +50,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
         comments = await CommentService.GetCommentsAsync();
     }
 
@@ -71,8 +69,21 @@
         }
     }
 
-    private async Task HandleDelete()
+
+    private async Task DeleteComment(int commentId)
     {
-        await OnDelete.InvokeAsync(comment!.Id);
+        try
+        {
+            // delete the comment
+            await CommentService.DeleteCommentAsync(commentId);
+
+            // update
+            comments = await CommentService.GetCommentsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
     }
 }
