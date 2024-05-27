@@ -107,7 +107,7 @@ else
     </div>
 
 
-    <CommentArea BlogPostId="blogPost.Id" @rendermode="InteractiveServer"/>
+    <CommentArea BlogPostId="blogPost.Id" OnDelete="DeleteComment" @rendermode="InteractiveServer"/>
 
 }
 
@@ -129,5 +129,22 @@ else
             comments = await CommentService.GetCommentsAsync();
         }
 
+    }
+
+    private async Task DeleteComment(int commentId)
+    {
+        try
+        {
+            // delete the comment
+            await CommentService.DeleteCommentAsync(commentId);
+
+            // update
+            comments = await CommentService.GetCommentsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
     }
 }

@@ -17,6 +17,17 @@
             </div>
             <p class="pb-2 mb-0">@comment.Content</p>
         </div>
+        <div class="mb-2">
+            <AuthorizeView Roles="Author, Moderator">
+                <Authorized> 
+                 <button class="btn btn-primary btn-sm" @onclick="HandleDelete">
+                     <i class="ai ai-trash"></i>
+                 </button>
+
+                </Authorized>
+                <NotAuthorized></NotAuthorized>
+            </AuthorizeView>
+        </div>
     }
    
     <div class="card border-0 bg-secondary pt-2 p-md-2 p-xl-3 p-xxl-4 mt-n3 mt-md-0">
@@ -29,8 +40,16 @@
     [Parameter, EditorRequired]
     public int BlogPostId { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnDelete { get; set; }
+
     private IEnumerable<CommentDTO> comments = [];
     private CommentDTO? comment;
+    private UserInfo? userInfo;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,5 +69,10 @@
             Console.WriteLine(ex);
             throw;
         }
+    }
+
+    private async Task HandleDelete()
+    {
+        await OnDelete.InvokeAsync(comment!.Id);
     }
 }
