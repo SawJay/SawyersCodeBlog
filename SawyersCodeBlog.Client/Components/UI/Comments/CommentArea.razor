@@ -5,8 +5,9 @@
 
 <div class="pt-4 pt-xl-5 mt-4" id="comments">
     <h2 class="h1 py-lg-1 py-xl-3">@comments.Count() Comments</h2>
-    @foreach(CommentDTO comment in comments.Where(c => c.BlogPostId == BlogPostId)) {
-        
+    @foreach (CommentDTO comment in comments.Where(c => c.BlogPostId == BlogPostId))
+    {
+
         <!-- Comment -->
         <div class="border-bottom py-4 mt-2 mb-4">
             <div class="d-flex align-items-center pb-1 mb-3">
@@ -19,19 +20,43 @@
             <p class="pb-2 mb-0">@comment.Content</p>
             <div class="mb-2">
                 <AuthorizeView>
-                        @if (comment.AuthorId == userInfo!.UserId || context.User.IsInRole("Author") || context.User.IsInRole("Moderator"))
+                    @if (comment.AuthorId == userInfo!.UserId || context.User.IsInRole("Author") || context.User.IsInRole("Moderator"))
+                    {
+                        @if (status == Status.Viewing)
                         {
-                            <button class="btn btn-primary btn-sm" @onclick="async () => await DeleteComment(comment.Id)">
+                            <button class="btn btn-danger btn-sm" aria-label="Delete Comment" @onclick="async () => await DeleteComment(comment.Id)">
                                 <i class="ai ai-trash"></i>
                             </button>
+                            <a class="btn btn-warning btn-sm" aria-label="Edit Comment" @onclick="() => status = Status.Editing">
+                                <i class="ai ai-pencil"></i>
+                            </a>
                         }
+                        else if (status == Status.Editing)
+                        {
+                            <EditForm Context="cotextEditForm" Model="comment" class="gap-3 p-3 align-items-center" OnValidSubmit="async () => await HandleUpdate(comment)">
+                                <DataAnnotationsValidator />
+                                <div class="gap-2">
+                                    <InputText class="form-control" @bind-Value="@comment.Content" />
+                                    <ValidationMessage For="() => comment.Content" />
+                                </div>
+                                <div class="mt-2 mt-md-0">
+                                    <span class="text-nowrap">
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="ai ai-check" aria-label="Save Changes"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                                <ValidationSummary />
+                            </EditForm>
+                        }
+                    }
                 </AuthorizeView>
             </div>
         </div>
     }
-   
+
     <div class="card border-0 bg-secondary pt-2 p-md-2 p-xl-3 p-xxl-4 mt-n3 mt-md-0">
-        <CommentForm BlogPostId="BlogPostId" OnSubmit="HandleSubmit"/>
+        <CommentForm BlogPostId="BlogPostId" OnSubmit="HandleSubmit" />
     </div>
 </div>
 
@@ -46,6 +71,14 @@
     private IEnumerable<CommentDTO> comments = [];
     private CommentDTO? comment;
     private UserInfo? userInfo;
+
+    private enum Status
+    {
+        Viewing,
+        Editing,
+    }
+
+    private Status status = Status.Viewing;
 
 
     protected override async Task OnInitializedAsync()
@@ -85,5 +118,13 @@
             Console.WriteLine(ex);
             throw;
         }
+    }
+
+    private async Task HandleUpdate(CommentDTO comment)
+    {
+        await CommentService.UpdateCommentAsync(comment);
+        comments = await CommentService.GetCommentsAsync();
+        status = Status.Viewing;
+
     }
 }
