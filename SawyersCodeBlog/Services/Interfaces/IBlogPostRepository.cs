@@ -16,6 +16,8 @@ namespace SawyersCodeBlog.Services.Interfaces
         Task RemoveTagsFromBlogPostAsync(int blogPostId);
         Task<BlogPost?> GetBlogPostBySlugAsync(string slug);
         Task<IEnumerable<BlogPost>> GetPopularBlogPostsAsync();
+        Task<PagedList<BlogPost>> GetPostsByCategoryId(int categoryId, int page, int pageSize);
+        Task<PagedList<BlogPost>> SearchBlogPostsAsync(string query, int page, int pageSize);
 
     }
 }

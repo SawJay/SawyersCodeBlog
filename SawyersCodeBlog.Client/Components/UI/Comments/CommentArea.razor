@@ -5,54 +5,9 @@
 
 <div class="pt-4 pt-xl-5 mt-4" id="comments">
     <h2 class="h1 py-lg-1 py-xl-3">@comments.Count() Comments</h2>
-    @foreach (CommentDTO comment in comments.Where(c => c.BlogPostId == BlogPostId))
+    @foreach (CommentDTO comment in comments)
     {
-
-        <!-- Comment -->
-        <div class="border-bottom py-4 mt-2 mb-4">
-            <div class="d-flex align-items-center pb-1 mb-3">
-                <img class="rounded-circle" src="@comment.AuthorImageURL" width="48" alt="Comment author">
-                <div class="ps-3">
-                    <h6 class="mb-0">@comment.AuthorName</h6>
-                    <span class="fs-sm text-body-secondary">@comment.Created</span>
-                </div>
-            </div>
-            <p class="pb-2 mb-0">@comment.Content</p>
-            <div class="mb-2">
-                <AuthorizeView>
-                    @if (comment.AuthorId == userInfo!.UserId || context.User.IsInRole("Author") || context.User.IsInRole("Moderator"))
-                    {
-                        @if (status == Status.Viewing)
-                        {
-                            <button class="btn btn-danger btn-sm" aria-label="Delete Comment" @onclick="async () => await DeleteComment(comment.Id)">
-                                <i class="ai ai-trash"></i>
-                            </button>
-                            <a class="btn btn-warning btn-sm" aria-label="Edit Comment" @onclick="() => status = Status.Editing">
-                                <i class="ai ai-pencil"></i>
-                            </a>
-                        }
-                        else if (status == Status.Editing)
-                        {
-                            <EditForm Context="cotextEditForm" Model="comment" class="gap-3 p-3 align-items-center" OnValidSubmit="async () => await HandleUpdate(comment)">
-                                <DataAnnotationsValidator />
-                                <div class="gap-2">
-                                    <InputText class="form-control" @bind-Value="@comment.Content" />
-                                    <ValidationMessage For="() => comment.Content" />
-                                </div>
-                                <div class="mt-2 mt-md-0">
-                                    <span class="text-nowrap">
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            <i class="ai ai-check" aria-label="Save Changes"></i>
-                                        </button>
-                                    </span>
-                                </div>
-                                <ValidationSummary />
-                            </EditForm>
-                        }
-                    }
-                </AuthorizeView>
-            </div>
-        </div>
+        <CommentItem BlogPostId="BlogPostId" Comment="comment" OnDelete="DeleteComment" OnUpdate="UpdateComment" />
     }
 
     <div class="card border-0 bg-secondary pt-2 p-md-2 p-xl-3 p-xxl-4 mt-n3 mt-md-0">
@@ -84,7 +39,7 @@
     protected override async Task OnInitializedAsync()
     {
         userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
-        comments = await CommentService.GetCommentsAsync();
+        comments = await CommentService.GetCommentsAsync(BlogPostId);
     }
 
     private async Task HandleSubmit(CommentDTO comment)
@@ -93,7 +48,7 @@
         {
             await CommentService.CreateCommentAsync(comment);
 
-            comments = await CommentService.GetCommentsAsync();
+            comments = await CommentService.GetCommentsAsync(BlogPostId);
         }
         catch (Exception ex)
         {
@@ -111,7 +66,7 @@
             await CommentService.DeleteCommentAsync(commentId);
 
             // update
-            comments = await CommentService.GetCommentsAsync();
+            comments = await CommentService.GetCommentsAsync(BlogPostId);
         }
         catch (Exception ex)
         {
@@ -120,11 +75,10 @@
         }
     }
 
-    private async Task HandleUpdate(CommentDTO comment)
+    private async Task UpdateComment(CommentDTO updatedComment)
     {
-        await CommentService.UpdateCommentAsync(comment);
-        comments = await CommentService.GetCommentsAsync();
+        await CommentService.UpdateCommentAsync(updatedComment);
+        comments = await CommentService.GetCommentsAsync(BlogPostId);
         status = Status.Viewing;
-
     }
 }

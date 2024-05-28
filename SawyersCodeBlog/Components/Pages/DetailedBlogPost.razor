@@ -106,8 +106,7 @@ else
         </div>
     </div>
 
-
-    <CommentArea @rendermode="InteractiveServer" BlogPostId="blogPost.Id" />
+    <CommentArea @rendermode="InteractiveAuto" BlogPostId="blogPost.Id" />
 
 }
 
@@ -126,7 +125,7 @@ else
         {
             blogPost = await BlogPostService.GetBlogPostBySlugAsync(Slug);
 
-            comments = await CommentService.GetCommentsAsync();
+            comments = await CommentService.GetCommentsAsync(blogPost.Id);
         }
 
     }

@@ -49,11 +49,11 @@ namespace SawyersCodeBlog.Services
             return comment;
         }
 
-        public async Task<IEnumerable<Comment>> GetCommentsAsync()
+        public async Task<IEnumerable<Comment>> GetCommentsAsync(int blogPostId)
         {
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
 
-            IEnumerable<Comment> comments = await context.Comments.Include(c => c.Author).ToListAsync();
+            IEnumerable<Comment> comments = await context.Comments.Where(c => c.BlogPostId == blogPostId).Include(c => c.Author).OrderByDescending(c => c.Created).ToListAsync();
 
             return comments;
         }

@@ -14,5 +14,7 @@ namespace SawyersCodeBlog.Client.Services.Interfaces
         Task IsDeleteBlogPostAsync(int blogPostId);
         Task<BlogPostDTO?> GetBlogPostBySlugAsync(string slug);
         Task<IEnumerable<BlogPostDTO>> GetPopularBlogPostsAsync();
+        Task<PagedList<BlogPostDTO>> GetPostsByCategoryId(int categoryId, int page, int pageSize);
+        Task<PagedList<BlogPostDTO>> SearchBlogPostsAsync(string query, int page, int pageSize);
     }
 }

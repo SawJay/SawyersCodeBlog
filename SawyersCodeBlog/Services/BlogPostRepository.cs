@@ -253,5 +253,33 @@ namespace SawyersCodeBlog.Services
 
             return blogPosts;
         }
+
+        public async Task<PagedList<BlogPost>> GetPostsByCategoryId(int categoryId, int page, int pageSize)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            PagedList<BlogPost> blogPosts = await context.BlogPosts.Where(bp => bp.IsPublished == true && bp.CategoryId == categoryId).Include(bp => bp.Category).Include(bp => bp.Comments).Include(bp => bp.Tags).OrderByDescending(bp => bp.Created).ToPagedListAsync(page, pageSize);
+
+            return blogPosts;
+        }
+
+        public async Task<PagedList<BlogPost>> SearchBlogPostsAsync(string query, int page, int pageSize)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            string normalizedQuery = query.Trim().ToLower();
+
+            PagedList<BlogPost> results = await context.BlogPosts.Where(b => b.IsPublished == true && b.IsDeleted == false).Include(b => b.Category)
+                .Include(b => b.Tags).Include(b => b.Comments).ThenInclude(c => c.Author).Where(b => string.IsNullOrWhiteSpace(normalizedQuery) 
+                || b.Title!.ToLower().Contains(normalizedQuery)
+                || b.Content!.ToLower().Contains(normalizedQuery) 
+                || b.Category!.Name!.ToLower().Contains(normalizedQuery) 
+                || b.Tags!.Select(t => t.Name!.ToLower()).Any(tagName => tagName.Contains(normalizedQuery))
+                // || b.Tags.Any(t => t.Name!.ToLower().Contains(normalizedQuery))
+                || b.Comments.Any( c=> c.Content!.ToLower().Contains(normalizedQuery) || c.Author!.FirstName!.ToLower().Contains(normalizedQuery) || c.Author!.LastName!.ToLower().Contains(normalizedQuery))
+               ) .OrderByDescending(b => b.Created).ToPagedListAsync(page, pageSize);
+
+            return results;
+        }
     }
 }

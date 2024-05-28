@@ -1,0 +1,104 @@
+﻿@using SawyersCodeBlog.Client.Helpers
+@using SawyersCodeBlog.Client.Models
+@using SawyersCodeBlog.Client.Services.Interfaces
+@inject ICommentDTOService CommentService
+
+@if (Comment is not null)
+{
+ 
+<!-- Comment -->
+<div class="border-bottom py-4 mt-2 mb-4">
+    <div class="d-flex align-items-center pb-1 mb-3">
+        <img class="rounded-circle" src="@Comment.AuthorImageURL" width="48" alt="Comment author">
+        <div class="ps-3">
+            <h6 class="mb-0">@Comment.AuthorName</h6>
+            <span class="fs-sm text-body-secondary">@Comment.Created</span>
+        </div>
+    </div>
+    <p class="pb-2 mb-0">@Comment.Content</p>
+    <div class="mb-2">
+        <AuthorizeView>
+            @if (Comment.AuthorId == userInfo!.UserId || context.User.IsInRole("Author") || context.User.IsInRole("Moderator"))
+            {
+                @if (status == Status.Viewing)
+                {
+                    <button class="btn btn-danger btn-sm" aria-label="Delete Comment" @onclick="HandleDelete">
+                        <i class="ai ai-trash"></i>
+                    </button>
+                    <a class="btn btn-warning btn-sm" aria-label="Edit Comment" @onclick="() => status = Status.Editing">
+                        <i class="ai ai-pencil"></i>
+                    </a>
+                }
+                else if (status == Status.Editing)
+                {
+                    <EditForm Context="contextEditForm" Model="Comment" class="gap-3 p-3 align-items-center" OnValidSubmit="HandleUpdate">
+                        <DataAnnotationsValidator />
+                        <div class="gap-2">
+                            <InputText class="form-control" @bind-Value="@Comment.Content" />
+                            <ValidationMessage For="() => Comment.Content" />
+                        </div>
+                        <div class="mt-2 mt-md-0">
+                            <span class="text-nowrap">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="ai ai-check" aria-label="Save Changes"></i>
+                                </button>
+                            </span>
+                        </div>
+                        <ValidationSummary />
+                    </EditForm>
+                }
+            }
+        </AuthorizeView>
+    </div>
+</div>
+
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public CommentDTO? Comment { get; set; }
+
+    [Parameter, EditorRequired]
+    public int BlogPostId { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnDelete { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<CommentDTO> OnUpdate { get; set; }
+
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    private UserInfo? userInfo;
+    private IEnumerable<CommentDTO> comments = [];
+
+    private enum Status
+    {
+        Viewing,
+        Editing,
+    }
+
+    private Status status = Status.Viewing;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+        comments = await CommentService.GetCommentsAsync(BlogPostId);
+    }
+
+
+    private async Task HandleDelete()
+    {
+        await OnDelete.InvokeAsync(Comment!.Id);
+    }
+
+    private async Task HandleUpdate()
+    {
+        await OnUpdate.InvokeAsync(Comment);
+        status = Status.Viewing;
+    }
+
+
+}

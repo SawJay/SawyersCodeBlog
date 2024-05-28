@@ -11,10 +11,10 @@
     <div class="offcanvas-body">
 
         <!-- Search box -->
-        <div class="position-relative mb-4 mb-lg-5">
+        <form class="position-relative mb-4 mb-lg-5" action="search" method="get">
             <i class="ai-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
-            <input class="form-control ps-5" type="search" placeholder="Enter keyword">
-        </div>
+            <input class="form-control ps-5" type="search" placeholder="Enter keyword" name="query" value="@Query">
+        </form>
 
         <!-- Popular posts -->
         <h4 class="pt-1 pt-lg-0 mt-lg-n2">Categories:</h4>
@@ -28,7 +28,7 @@
             @foreach (CategoryDTO category in topCategories)
             {
                 <li class="mb-2">
-                    <a class="nav-link d-flex p-0" href="#">
+                    <a class="nav-link d-flex p-0" href="category/@category.Id">
                         @category.Name
                         <span class="fs-sm text-body-secondary ms-2">(@category.Posts.Count())</span>
                     </a>
@@ -43,7 +43,7 @@
             {
                 <li class="border-bottom pb-3 mb-3">
                     <span class="h6 mb-0">
-                        <a href="#"><ai class="ai ai-note"></ai>  @blogPost.Title</a>
+                        <a href="posts/@blogPost.Slug"><ai class="ai ai-note"></ai>  @blogPost.Title</a>
                     </span>
                 </li>
             }
@@ -63,7 +63,8 @@
 
 @code {
     // SSR
-
+    [SupplyParameterFromQuery]
+    public string? Query { get; set; }
 
     public IEnumerable<BlogPostDTO> topBlogPosts = [];
     public IEnumerable<CategoryDTO> topCategories = [];

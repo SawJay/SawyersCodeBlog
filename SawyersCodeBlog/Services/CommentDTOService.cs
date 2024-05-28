@@ -42,10 +42,10 @@ namespace SawyersCodeBlog.Services
             return comment?.ToDTO();
         }
 
-        public async Task<IEnumerable<CommentDTO>> GetCommentsAsync()
+        public async Task<IEnumerable<CommentDTO>> GetCommentsAsync(int blogPostId)
         {
             {
-                IEnumerable<Comment> comments = await _repository.GetCommentsAsync();
+                IEnumerable<Comment> comments = await _repository.GetCommentsAsync(blogPostId);
 
                 IEnumerable<CommentDTO> commentDTOs = comments.Select(c => c.ToDTO());
 
