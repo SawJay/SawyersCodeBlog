@@ -101,6 +101,21 @@ namespace SawyersCodeBlog.Services
 
         }
 
+        public async Task<PagedList<BlogPostDTO>> GetPostsByTagIdAsync(int tagId, int page, int pageSize)
+        {
+            PagedList<BlogPost> post = await _repository.GetPostsByTagIdAsync(tagId, page, pageSize);
+
+            PagedList<BlogPostDTO> postDTO = new PagedList<BlogPostDTO>()
+            {
+                Page = post.Page,
+                TotalPages = post.TotalPages,
+                TotalItems = post.TotalItems,
+                Data = post.Data.Select(p => p.ToDTO())
+            };
+
+            return postDTO;
+        }
+
         public async Task<PagedList<BlogPostDTO>> GetPublishedBlogPostsAsync(int page, int pageSize)
         {
             PagedList<BlogPost> post = await _repository.GetPublishedBlogPostsAsync(page, pageSize);
@@ -114,6 +129,13 @@ namespace SawyersCodeBlog.Services
             };
 
             return postDTO;
+        }
+
+        public async Task<TagDTO?> GetTagByIdAsync(int tagId)
+        {
+            Tag? tag = await _repository.GetTagByIdAsync(tagId);
+
+            return tag?.ToDTO();
         }
 
         public async Task IsDeleteBlogPostAsync(int blogPostId)

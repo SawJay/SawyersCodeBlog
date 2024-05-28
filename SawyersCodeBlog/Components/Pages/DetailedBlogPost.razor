@@ -67,13 +67,10 @@ else
         <h3 class="h6 py-1 mb-0 me-4">Relevant tags:</h3>
         @foreach (TagDTO tag in blogPost.Tags)
         {
-            <a class="nav-link fs-sm py-1 px-0 me-3" href="#">
+            <a class="nav-link fs-sm py-1 px-0 me-3" href="tag/@tag.Id">
                 <span class="text-primary">#</span>@tag.Name
             </a>
         }
-        <a class="nav-link fs-sm py-1 px-0 me-3" href="#">
-            <span class="text-primary">#</span>Books
-        </a>
     </div>
 
     <!-- Author widget -->

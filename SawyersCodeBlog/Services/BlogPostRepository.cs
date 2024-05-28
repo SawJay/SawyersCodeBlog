@@ -281,5 +281,24 @@ namespace SawyersCodeBlog.Services
 
             return results;
         }
+
+        public async Task<Tag?> GetTagByIdAsync(int tagId)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            Tag? tag = await context.Tags.FirstOrDefaultAsync(t => t.Id == tagId);
+
+            return tag;
+        }
+
+        public async Task<PagedList<BlogPost>> GetPostsByTagIdAsync(int tagId, int page, int pageSize)
+        {
+            using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
+
+            PagedList<BlogPost> posts = await context.BlogPosts.Where(b => b.IsPublished == true && b.IsDeleted == false).Include(b => b.Category)
+                .Include(b => b.Tags).Include(b => b.Comments).Where(b => b.Tags.Any(t => t.Id == tagId)).OrderByDescending(b => b.Created).ToPagedListAsync(page, pageSize);
+
+            return posts;
+        }
     }
 }

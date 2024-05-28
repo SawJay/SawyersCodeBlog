@@ -18,6 +18,8 @@ namespace SawyersCodeBlog.Services.Interfaces
         Task<IEnumerable<BlogPost>> GetPopularBlogPostsAsync();
         Task<PagedList<BlogPost>> GetPostsByCategoryId(int categoryId, int page, int pageSize);
         Task<PagedList<BlogPost>> SearchBlogPostsAsync(string query, int page, int pageSize);
+        Task<Tag?> GetTagByIdAsync(int tagId);
+        Task<PagedList<BlogPost>> GetPostsByTagIdAsync(int tagId, int page, int pageSize);
 
     }
 }

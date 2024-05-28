@@ -16,5 +16,7 @@ namespace SawyersCodeBlog.Client.Services.Interfaces
         Task<IEnumerable<BlogPostDTO>> GetPopularBlogPostsAsync();
         Task<PagedList<BlogPostDTO>> GetPostsByCategoryId(int categoryId, int page, int pageSize);
         Task<PagedList<BlogPostDTO>> SearchBlogPostsAsync(string query, int page, int pageSize);
+        Task<TagDTO?> GetTagByIdAsync(int tagId);
+        Task<PagedList<BlogPostDTO>> GetPostsByTagIdAsync(int tagId, int page, int pageSize);
     }
 }

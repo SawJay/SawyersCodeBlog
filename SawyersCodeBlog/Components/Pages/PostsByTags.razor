@@ -1,4 +1,4 @@
-﻿@page "/search"
+﻿@page "/tag/{tagId:int}"
 @using SawyersCodeBlog.Client.Components.UI.BlogPosts
 @using SawyersCodeBlog.Client.Models
 @using SawyersCodeBlog.Client.Services.Interfaces
@@ -8,9 +8,12 @@
 @inject NavigationManager Nav
 @layout SidebarLayout
 
-    <PageTitle>Search: @Query</PageTitle>
+@if (tag is not null)
+{
 
-    <h1 class="pb-3 pb-lg-4">Search results for: "@Query"</h1>
+    <PageTitle>Posts in @tag.Name</PageTitle>
+
+    <h1 class="pb-3 pb-lg-4">@tag.Name</h1>
 
     @foreach (BlogPostDTO blogPost in posts.Data)
     {
@@ -34,14 +37,16 @@
         @if (Page < posts.TotalPages)
         {
             <div class="col col-md-4 col-12 justify-content-end">
-            <a class="btn btn-primary btn-sm w-md-auto w-100" href="@Nav.GetUriWithQueryParameter(nameof(Page), Page + 1)"><ai class="ai ai-arrow-right"></ai>  Next Page</a>
+                <a class="btn btn-primary btn-sm w-md-auto w-100" href="@Nav.GetUriWithQueryParameter(nameof(Page), Page + 1)"><ai class="ai ai-arrow-right"></ai>  Next Page</a>
             </div>
         }
     </div>
 
+}
+
 @code {
-    [SupplyParameterFromQuery]
-    public string? Query { get; set; }
+    [Parameter]
+    public int TagId { get; set; }
 
     [SupplyParameterFromQuery]
     public int Page { get; set; }
@@ -49,20 +54,20 @@
     private int pageSize = 4;
     private BlogPostDTO blogPost = new BlogPostDTO();
     private PagedList<BlogPostDTO> posts = new PagedList<BlogPostDTO>();
-    private IEnumerable<CategoryDTO> categories = [];
-    private CategoryDTO? category;
+    private TagDTO? tag;
 
     protected override async Task OnParametersSetAsync()
     {
         if (Page < 1) Page = 1;
 
-        if (string.IsNullOrWhiteSpace(Query))
+        tag = await BlogPostService.GetTagByIdAsync(TagId);
+
+        if (tag is null)
         {
             Nav.NavigateTo("/");
         }
 
-        posts = await BlogPostService.SearchBlogPostsAsync(Query!, Page, pageSize);
+        posts = await BlogPostService.GetPostsByTagIdAsync(TagId, Page, pageSize);
     }
 
 }
-
