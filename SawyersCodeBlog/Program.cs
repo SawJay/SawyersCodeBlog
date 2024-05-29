@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SawyersCodeBlog.Client.Models;
 using SawyersCodeBlog.Client.Services.Interfaces;
 using SawyersCodeBlog.Components;
 using SawyersCodeBlog.Components.Account;
@@ -57,7 +59,19 @@ builder.Services.AddScoped<IBlogPostDTOService, BlogPostDTOService>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ICommentDTOService, CommentDTOService>();
 
+builder.Services.AddCors(builder =>
+{
+    builder.AddPolicy("DefaultPolicy", policy =>
+    {
+        policy.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors("DefaultPolicy");
 
 using (var scope = app.Services.CreateScope())
 {
@@ -91,5 +105,22 @@ app.MapRazorComponents<App>()
 app.MapAdditionalIdentityEndpoints();
 
 app.MapControllers();
+
+// GET: api/blogposts
+app.MapGet("api/blogposts", async ([FromServices] IBlogPostDTOService blogService,
+                                   [FromQuery] int page = 1,
+                                   [FromQuery] int pageSize = 4) =>
+{
+    try
+    {
+        PagedList<BlogPostDTO> blogPosts = await blogService.GetPublishedBlogPostsAsync(page, pageSize);
+        return Results.Ok(blogPosts);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex);
+        return Results.Problem();
+    }
+});
 
 app.Run();
