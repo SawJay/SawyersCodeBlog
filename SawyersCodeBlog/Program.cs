@@ -34,10 +34,15 @@ builder.Services.AddAuthentication(options =>
 var connectionString = DataUtility.GetConnectionString(builder.Configuration) ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-    options.UseNpgsql(
-        connectionString,
-        o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
-        ));
+   options.UseNpgsql(connectionString, o => o.MigrationsHistoryTable(
+                      tableName: "CodeBlogMigrationHistory",
+                      schema: "blog")));
+
+
+//options.UseNpgsql(
+//    connectionString,
+//    o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+//    ));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

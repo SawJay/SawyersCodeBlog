@@ -109,7 +109,7 @@ namespace SawyersCodeBlog.Services
         {
             using ApplicationDbContext context = _dbContextFactory.CreateDbContext();
 
-            BlogPost? blogPost = await context.BlogPosts.Include(b =>b.Tags).FirstOrDefaultAsync(b => b.Id == id);
+            BlogPost? blogPost = await context.BlogPosts.Include(b => b.Tags).FirstOrDefaultAsync(b => b.Id == id);
 
             return blogPost;
         }

@@ -17,6 +17,7 @@ namespace SawyersCodeBlog.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("blog")
                 .HasAnnotation("ProductVersion", "8.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -34,7 +35,7 @@ namespace SawyersCodeBlog.Migrations
 
                     b.HasIndex("TagsId");
 
-                    b.ToTable("BlogPostTag");
+                    b.ToTable("BlogPostTag", "blog");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -60,7 +61,7 @@ namespace SawyersCodeBlog.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("AspNetRoles", "blog");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -85,7 +86,7 @@ namespace SawyersCodeBlog.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("AspNetRoleClaims", "blog");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -110,7 +111,7 @@ namespace SawyersCodeBlog.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("AspNetUserClaims", "blog");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -132,7 +133,7 @@ namespace SawyersCodeBlog.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("AspNetUserLogins", "blog");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -147,7 +148,7 @@ namespace SawyersCodeBlog.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("AspNetUserRoles", "blog");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -166,7 +167,7 @@ namespace SawyersCodeBlog.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("AspNetUserTokens", "blog");
                 });
 
             modelBuilder.Entity("SawyersCodeBlog.Data.ApplicationUser", b =>
@@ -245,7 +246,7 @@ namespace SawyersCodeBlog.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("AspNetUsers", "blog");
                 });
 
             modelBuilder.Entity("SawyersCodeBlog.Model.BlogPost", b =>
@@ -296,7 +297,7 @@ namespace SawyersCodeBlog.Migrations
 
                     b.HasIndex("ImageId");
 
-                    b.ToTable("BlogPosts");
+                    b.ToTable("BlogPosts", "blog");
                 });
 
             modelBuilder.Entity("SawyersCodeBlog.Model.Category", b =>
@@ -321,7 +322,7 @@ namespace SawyersCodeBlog.Migrations
 
                     b.HasIndex("ImageId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", "blog");
                 });
 
             modelBuilder.Entity("SawyersCodeBlog.Model.Comment", b =>
@@ -359,7 +360,7 @@ namespace SawyersCodeBlog.Migrations
 
                     b.HasIndex("BlogPostId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", "blog");
                 });
 
             modelBuilder.Entity("SawyersCodeBlog.Model.ImageUpload", b =>
@@ -378,7 +379,7 @@ namespace SawyersCodeBlog.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", "blog");
                 });
 
             modelBuilder.Entity("SawyersCodeBlog.Model.Tag", b =>
@@ -395,7 +396,7 @@ namespace SawyersCodeBlog.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tags");
+                    b.ToTable("Tags", "blog");
                 });
 
             modelBuilder.Entity("BlogPostTag", b =>
